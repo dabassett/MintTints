@@ -1,0 +1,25 @@
+{
+  "version": "0.0.1",
+  "name": "minttints",
+  "description": "Showing off HSWL and automatic text contrast adjustments",
+  "url": "http://github.com/dabassett/MintTints",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/dabassett/MintTints"
+  },
+  "keywords": [],
+  "author": "David Bassett",
+  "contributors": [],
+  "main": "./tinycolor.js",
+  "directories": {},
+  "engines": {
+    "node": "*"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-concat": "~0.1.3",
+    "grunt-contrib-jshint": "~0.11.0",
+    "grunt-contrib-qunit": "^0.7.0"
+  }
+}
