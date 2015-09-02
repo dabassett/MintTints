@@ -8,19 +8,14 @@
     "type": "git",
     "url": "http://github.com/dabassett/MintTints"
   },
-
   "keywords": [],
   "author": "David Bassett",
   "contributors": [],
   "main": ".index.html",
   "directories": {},
   "engines": {
-    "node": "*"
-  },
-  "engines": {
     "node": ">=0.12.0"
   },
-
   "devDependencies": {
     "babel-core": "^5.5.6",
     "browser-sync": "^2.2.1",
@@ -42,9 +37,29 @@
     "gulp-useref": "^1.1.1",
     "main-bower-files": "^2.5.0",
     "opn": "^1.0.1",
-    "wiredep": "^2.2.2"
+    "wiredep": "^2.2.2",
+    "browserify": "~11.0.1",
+    "vinyl-source-stream": "~1.1.0",
+    "browserify-shim": "~3.8.10",
+    "debowerify": "~1.3.1",
+    "vinyl-buffer": "~1.0.0"
   },
-
+  "browser": {
+    "bootstrap": "./bower_components/bootstrap-sass/assets/javascripts/bootstrap.js"
+  },
+  "browserify": {
+    "transform": [
+      "debowerify",
+      "browserify-shim"
+    ]
+  },
+  "browserify-shim": {
+    "bootstrap": {
+      "depends": [
+        "jquery:jQuery"
+      ]
+    }
+  },
   "eslintConfig": {
     "env": {
       "node": true,
