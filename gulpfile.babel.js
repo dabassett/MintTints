@@ -102,17 +102,20 @@ gulp.task('serve', ['styles', 'fonts', 'browserify'], () => {
     }
   });
 
+
   gulp.watch([
     'app/*.html',
-    'app/scripts/**/*.js',
     'app/images/**/*',
     '.tmp/fonts/**/*'
   ]).on('change', reload);
 
   gulp.watch('app/styles/**/*.scss', ['styles']);
+  gulp.watch('app/scripts/**/*.js', ['js-watch']);
   gulp.watch('app/fonts/**/*', ['fonts']);
   gulp.watch('bower.json', ['fonts']);
 });
+
+gulp.task('js-watch', ['browserify'], reload);
 
 gulp.task('serve:dist', () => {
   browserSync({
@@ -142,7 +145,7 @@ gulp.task('serve:test', () => {
 });
 
 gulp.task('browserify', () => {
-  browserify('app/scripts/main.js')
+  return browserify('app/scripts/main.js')
     .bundle()
     .pipe(source('bundle.js'))
     .pipe(gulp.dest('.tmp/scripts'))
