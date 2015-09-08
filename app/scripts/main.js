@@ -1,23 +1,23 @@
 'use strict';
 
 global.jQuery = require('jquery');
-var $ = global.jQuery
+var $ = global.jQuery;
 var tc = require('tinycolor');
 require('bootstrap-sass'); // todo pick only what you need
 
 $(function() {
   var $colorModal = $('#color-info');
   var $infoBox = {
-    modal:    $colorModal,
-    header:   $colorModal.find('.modal-header'),
-    body:     $colorModal.find('.modal-body'),
-    title:    $colorModal.find('.modal-title'),
-    lum:      $colorModal.find('#luminance'),
-    rgb:      $colorModal.find('#rgb'),
+    modal: $colorModal,
+    header: $colorModal.find('.modal-header'),
+    body: $colorModal.find('.modal-body'),
+    title: $colorModal.find('.modal-title'),
+    lum: $colorModal.find('#luminance'),
+    rgb: $colorModal.find('#rgb'),
     contrast: $colorModal.find('#max-contrast'),
-    stats:    $colorModal.find('.stats'),
-    samples:  $colorModal.find('.text-samples'),
-    aaLarge:  $colorModal.find('#aa-large'),
+    stats: $colorModal.find('.stats'),
+    samples: $colorModal.find('.text-samples'),
+    aaLarge: $colorModal.find('#aa-large'),
     aaaLarge: $colorModal.find('#aaa-large'),
     aaaSmall: $colorModal.find('#aaa-small')
   };
@@ -62,13 +62,13 @@ $(function() {
       .hover(function() {
         $(this).css({
           'border-color': colors.aaaLarge.toHexString(),
-          'box-shadow': '0 0 5px ' + colors.aaaLarge.toHexString(),
-        })
+          'box-shadow': '0 0 5px ' + colors.aaaLarge.toHexString()
+        });
       }, function() {
         $(this).css({
           'border-color': 'transparent',
           'box-shadow': ''
-        })
+        });
       })
       .click(function() {
         $infoBox.header.css({
