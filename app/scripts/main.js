@@ -28,6 +28,15 @@ $(function() {
                tc.readability(color, 'white')) * 10) / 10;
   }
 
+  function hswlMutateTint(color, row, col, step) {
+    row = row - step + 1;
+    col = col - step + 1;
+    var hswl = color.toHswl();
+    var lum = (row < 0 ? hswl.wl * (step + row) / step : hswl.wl + ((1 - hswl.wl) * row / step));
+    var sat = (col < 0 ? hswl.s * (step + col) / step : hswl.s + ((1 - hswl.s) * col / step));
+    return tc({h: hswl.h, s: sat, wl: lum});
+  }
+
   $.fn.addColorLabel = function(color, contrastColor) {
     $('<h4 class="contrast">' + color.toHexString() + '</h4>')
       .appendTo(this)
@@ -47,8 +56,9 @@ $(function() {
     colors.h = hswl.h;
     colors.s = hswl.s;
     colors.lum = hswl.wl;
-    colors.dark = tc({h: colors.h, s: colors.s * 0.50, wl: colors.lum * 0.25});
+    colors.dark = tc({h: colors.h, s: colors.s * 0.5, wl: colors.lum * 0.25});
     colors.darkText = tc.getReadable(colors.dark, {contrastRatio: 6, returnBestFit: true});
+    colors.light = tc({h: colors.h, s: colors.s * 0.5, wl: colors.lum + ((1 - colors.lum) * 0.5)});
     colors.divider = '2px solid ' + colors.aaaLarge.toHexString();
 
     var $column = $('<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6"></div>').appendTo($('.colors'));
@@ -86,7 +96,8 @@ $(function() {
 
         $infoBox.samples.css({
           'background-color': colors.orig.toHexString(),
-          'border-top': colors.divider
+          'border-top': colors.divider,
+          'border-bottom': colors.divider
         })
           .find('h3')
           .css('color', colors.aaaLarge.toHexString());
@@ -99,6 +110,16 @@ $(function() {
         $infoBox.aaaSmall.css('color', colors.aaaSmall.toHexString())
           .find('.hex')
           .text(colors.aaaSmall.toHexString());
+
+        $infoBox.modal.find('.shades')
+          .css('background-color', colors.light.toHexString())
+          .find('.shade')
+            .each(function () {
+              var elem = $(this);
+              var shade = hswlMutateTint(colors.orig, elem.data('row'), elem.data('col'), 4);
+              elem.css('background-color', shade.toHexString());
+              console.log('row: '+elem.data('row')+' col: '+elem.data('col'));
+            });
 
         $infoBox.modal.modal();
       });

@@ -82,15 +82,43 @@ body {
       padding: 0;
     }
 
-    .stats {
+    .stats, .text-samples, .shades {
       padding: 15px;
     }
 
-    .text-samples {
-      padding: 15px;
+    .shades {
+      .shade {
+        display: inline-block;
+        background: #444;
+        border: 1px solid transparent;
+        border-radius: 0px;
+      }
 
-      h3 {
+      .well {
         text-align: center;
+      }
+
+      .sm-row, .lg-row, .sm-col, .lg-col {
+        //line-height: 0;
+        //font-size: 0;
+      }
+      .sm-row .shade, {
+        min-height: 20px;
+      }
+      .lg-row .shade {
+        min-height: 68px;
+      }
+      .sm-col .shade {
+        min-width: 20px;
+      }
+      .lg-col .shade {
+        min-width: 68px;
+      }
+
+      #row2 {
+        .shade {
+          min-height: 148px;
+        }
       }
     }
   }
