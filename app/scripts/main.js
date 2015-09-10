@@ -28,13 +28,32 @@ $(function() {
                tc.readability(color, 'white')) * 10) / 10;
   }
 
-  function hswlMutateTint(color, row, col, step) {
-    row = row - step + 1;
-    col = col - step + 1;
+  function adjustAttribute(attr, step, total, limit) {
+    var limit = limit || 0.12;
+    var normStep = step - total + 1;
+    var adjustment;
+
+    if (normStep < 0) {
+      adjustment = attr * normStep / total;
+    } else {
+      adjustment = ((1 - attr) * normStep / total);
+    }
+
+    if (Math.abs(adjustment) > Math.abs(normStep * limit)) {
+      return attr + (normStep * limit);
+    }
+
+    return attr + adjustment;
+  }
+
+  function hswlMutateTint(color, row, col, total) {
     var hswl = color.toHswl();
-    var lum = (row < 0 ? hswl.wl * (step + row) / step : hswl.wl + ((1 - hswl.wl) * row / step));
-    var sat = (col < 0 ? hswl.s * (step + col) / step : hswl.s + ((1 - hswl.s) * col / step));
-    return tc({h: hswl.h, s: sat, wl: lum});
+    var lum, sat;
+    return tc({
+      h: hswl.h,
+      s: adjustAttribute(hswl.s, col, total, 0.25),
+      wl: adjustAttribute(hswl.wl, row, total)
+    });
   }
 
   $.fn.addColorLabel = function(color, contrastColor) {
@@ -126,6 +145,17 @@ $(function() {
 
   }
 
+  function updateJumbo() {
+    // selects a random hue only to keep the jumbotron colors consistent
+    var randomColor = tc({h: Math.floor(Math.random() * 360), s: 0.6, wl: 0.4});
+    var contrastColor = tc.getReadable(randomColor, {contrastRatio: 3.5})
+    $('.jumbotron').css({
+      'background-color': randomColor.toHexString(),
+      'border-color': contrastColor.toHexString(),
+      'color': contrastColor.toHexString()
+    });
+  }
+
   function addColors() {
     // populate the random colors list
     for(var i = 0; i < 48; i++) {
@@ -138,5 +168,13 @@ $(function() {
     addColors();
   });
 
+  // disable jumbotron transition and set an initial color
+  var savedTransition = $('.jumbotron').css('transition');
+  $('.jumbotron').css('transition', 'none');
+  updateJumbo();
+  // reset the transition
+  setInterval(function() { $('.jumbotron').css('transition', savedTransition) }, 10);
+
+  setInterval(function() { updateJumbo(); }, 120000);
   addColors();
 });

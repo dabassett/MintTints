@@ -10,7 +10,7 @@
   @include transition(
     background $speed,
     box-shadow $speed,
-    border    $speed ease-out
+    border     $speed ease-out
   );
 
   &:hover {
@@ -35,7 +35,14 @@
     padding: 5px;
     line-height: 20px;
   }
+}
 
-
+// todo, this needs to get moved to main
+.jumbotron {
+  @include transition(
+    background 60s,
+    color      60s,
+    border     60s ease-out
+  );
 }
 
