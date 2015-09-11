@@ -108,7 +108,7 @@ $(function() {
         $infoBox.title.text('Information for ' + colors.orig.toHexString());
 
         $infoBox.stats.css('background-color', colors.dark.toHexString());
-        $infoBox.stats.find('p').css('color', colors.darkText.toHexString());
+        $infoBox.stats.css('color', colors.darkText.toHexString());
         $infoBox.rgb.text(colors.orig.toRgbString());
         $infoBox.lum.text(colors.lum);
         $infoBox.contrast.text(maxContrast(colors.orig));
@@ -137,7 +137,6 @@ $(function() {
               var elem = $(this);
               var shade = hswlMutateTint(colors.orig, elem.data('row'), elem.data('col'), 4);
               elem.css('background-color', shade.toHexString());
-              console.log('row: '+elem.data('row')+' col: '+elem.data('col'));
             });
 
         $infoBox.modal.modal();

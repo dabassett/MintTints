@@ -1,27 +1,20 @@
-<!doctype html>
-<html lang="">
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>MintTints</title>
-
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <!-- Place favicon.ico in the root directory -->
-
-    <!-- build:css styles/vendor.css -->
-    <!-- endbuild -->
-
-    <!-- build:css styles/main.css -->
+    <!--Place favicon.ico in the root directory-->
+    <!--build:css styles/vendor.css-->
+    <!--endbuild-->
+    <!--build:css styles/main.css-->
     <link rel="stylesheet" href="styles/main.css">
-    <!-- endbuild -->
-    
+    <!--endbuild-->
   </head>
-  <body>
-    <!--[if lt IE 10]>
-      <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-    <![endif]-->
-    
+  <body><!--[if lt IE 10]>
+    <p class="browserupgrade">You are using an outdated browser. Please <a href="http://browsehappy.com/">upgrade</a> your browser to improve your experience.</p><![endif]-->
     <div class="container">
       <div class="header">
         <ul class="nav nav-pills pull-right">
@@ -31,62 +24,48 @@
         </ul>
         <h3 class="text-muted">MintTints</h3>
       </div>
-
       <div class="jumbotron">
-        <h1>Mint Tints</h1>
-        <p class="lead">Showing off HSWL</p>
+        <h1>MintTints
+          <p class="lead">Explore the possibilities of automated color design</p>
+          <p class="lead">The freshest shades on the web</p>
+        </h1>
       </div>
-
-      <div class="row marketing">
-        <div class="col-lg-4">
-          <h4>HTML5 Boilerplate</h4>
-          <p>HTML5 Boilerplate is a professional front-end template for building fast, robust, and adaptable web apps or sites.</p>
-        </div>
-        <div class="col-lg-4">
-          <h4>Sass</h4>
-          <p>Sass is the most mature, stable, and powerful professional grade CSS extension language in the world.</p>
-        </div>
-        <div class="col-lg-4">
-          <h4>Bootstrap</h4>
-          <p>Sleek, intuitive, and powerful mobile first front-end framework for faster and easier web development.</p>
-        </div>
-      </div>
-
-      <div class="row colors">
-      </div>
-
+      <div class="row marketing"></div>
+      <div class="row colors"></div>
       <div class="row">
         <button id="more-colors" type="button" class="btn btn-primary btn-lg btn-block">More Colors!</button>
       </div>
-
       <div class="footer">
-        <p></p>
+        <p>I guess something should go here</p>
       </div>
     </div>
-    
-    <div id="color-info" class="modal fade" role="dialog" aria-labelledby="gridSystemModalLabel">
-      <div class="modal-dialog modal-lg" role="document">
+    <div id="color-info" role="dialog" aria-labelledby="gridSystemModalLabel" class="modal fade">
+      <div role="document" class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-            <h4 class="modal-title" id="gridSystemModalLabel">Information for #ffffff</h4>
+            <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true">&times;</span></button>
+            <h4 id="gridSystemModalLabel" class="modal-title">Information for #ffffff</h4>
           </div>
           <div class="modal-body">
             <div class="container-fluid">
               <div class="stats">
                 <div class="row">
-                  <div class="col-md-3"><p>RGB</p></div>
-                  <div class="col-md-8"><p id="rgb"></p></div>
+                  <div class="col-md-3">RGB</div>
+                  <div class="col-md-8">
+                    <p id="rgb"> </p>
+                  </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-3"><p>Luminance</p></div>
-                  <div class="col-md-8"><p id="luminance"></p></div>
+                  <div class="col-md-3">Luminance</div>
+                  <div class="col-md-8">
+                    <p id="luminance"></p>
+                  </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-3"><p>Max Contrast</p></div>
-                  <div class="col-md-8"><p id="max-contrast"></p></div>
+                  <div class="col-md-3">Max Contrast</div>
+                  <div class="col-md-8">
+                    <p id="max-contrast"></p>
+                  </div>
                 </div>
               </div>
               <div class="text-samples">
@@ -99,7 +78,7 @@
                   <div id="aaa-large" class="col-md-4">
                     <h4>AAA Large / AA Small</h4>
                     <h4 class="hex">#fff</h4>
-                    <p> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
                   </div>
                   <div id="aaa-small" class="col-md-4">
                     <h4>AAA Small</h4>
@@ -112,111 +91,13 @@
                 <div class="row">
                   <div class="col-md-4">
                     <div class="well">
-                      <div class="sm-row">
-                        <span class="sm-col">
-                          <span class="shade" data-row="6" data-col="0"></span>
-                          <span class="shade" data-row="6" data-col="1"></span>
-                          <span class="shade" data-row="6" data-col="2"></span>
-                        </span>
-                        <span class="lg-col">
-                          <span class="shade" data-row="6" data-col="3"></span>
-                        </span>
-                        <span class="sm-col">
-                          <span class="shade" data-row="6" data-col="4"></span>
-                          <span class="shade" data-row="6" data-col="5"></span>
-                          <span class="shade" data-row="6" data-col="6"></span>
-                        </span>
-                      </div>
-                      <div class="sm-row">
-                        <span class="sm-col">
-                          <span class="shade" data-row="5" data-col="0"></span>
-                          <span class="shade" data-row="5" data-col="1"></span>
-                          <span class="shade" data-row="5" data-col="2"></span>
-                        </span>
-                        <span class="lg-col">
-                          <span class="shade" data-row="5" data-col="3"></span>
-                        </span>
-                        <span class="sm-col">
-                          <span class="shade" data-row="5" data-col="4"></span>
-                          <span class="shade" data-row="5" data-col="5"></span>
-                          <span class="shade" data-row="5" data-col="6"></span>
-                        </span>
-                      </div>
-                      <div class="sm-row">
-                        <span class="sm-col">
-                          <span class="shade" data-row="4" data-col="0"></span>
-                          <span class="shade" data-row="4" data-col="1"></span>
-                          <span class="shade" data-row="4" data-col="2"></span>
-                        </span>
-                        <span class="lg-col">
-                          <span class="shade" data-row="4" data-col="3"></span>
-                        </span>
-                        <span class="sm-col">
-                          <span class="shade" data-row="4" data-col="4"></span>
-                          <span class="shade" data-row="4" data-col="5"></span>
-                          <span class="shade" data-row="4" data-col="6"></span>
-                        </span>
-                      </div>
-                      <div class="lg-row">
-                        <span class="sm-col">
-                          <span class="shade" data-row="3" data-col="0"></span>
-                          <span class="shade" data-row="3" data-col="1"></span>
-                          <span class="shade" data-row="3" data-col="2"></span>
-                        </span>
-                        <span class="lg-col">
-                          <span class="shade" data-row="3" data-col="3"></span>
-                        </span>
-                        <span class="sm-col">
-                          <span class="shade" data-row="3" data-col="4"></span>
-                          <span class="shade" data-row="3" data-col="5"></span>
-                          <span class="shade" data-row="3" data-col="6"></span>
-                        </span>
-                      </div>
-                      <div class="sm-row">
-                        <span class="sm-col">
-                          <span class="shade" data-row="2" data-col="0"></span>
-                          <span class="shade" data-row="2" data-col="1"></span>
-                          <span class="shade" data-row="2" data-col="2"></span>
-                        </span>
-                        <span class="lg-col">
-                          <span class="shade" data-row="2" data-col="3"></span>
-                        </span>
-                        <span class="sm-col">
-                          <span class="shade" data-row="2" data-col="4"></span>
-                          <span class="shade" data-row="2" data-col="5"></span>
-                          <span class="shade" data-row="2" data-col="6"></span>
-                        </span>
-                      </div>
-                      <div class="sm-row">
-                        <span class="sm-col">
-                          <span class="shade" data-row="1" data-col="0"></span>
-                          <span class="shade" data-row="1" data-col="1"></span>
-                          <span class="shade" data-row="1" data-col="2"></span>
-                        </span>
-                        <span class="lg-col">
-                          <span class="shade" data-row="1" data-col="3"></span>
-                        </span>
-                        <span class="sm-col">
-                          <span class="shade" data-row="1" data-col="4"></span>
-                          <span class="shade" data-row="1" data-col="5"></span>
-                          <span class="shade" data-row="1" data-col="6"></span>
-                        </span>
-                      </div>
-                      <div class="sm-row">
-                        <span class="sm-col">
-                          <span class="shade" data-row="0" data-col="0"></span>
-                          <span class="shade" data-row="0" data-col="1"></span>
-                          <span class="shade" data-row="0" data-col="2"></span>
-                        </span>
-                        <span class="lg-col">
-                          <span class="shade" data-row="0" data-col="3"></span>
-                        </span>
-                        <span class="sm-col">
-                          <span class="shade" data-row="0" data-col="4"></span>
-                          <span class="shade" data-row="0" data-col="5"></span>
-                          <span class="shade" data-row="0" data-col="6"></span>
-                        </span>
-                      </div>
+                      <div class="sm-row"><span class="sm-col"><span data-row="6" data-col="0" class="shade"></span><span data-row="6" data-col="1" class="shade"></span><span data-row="6" data-col="2" class="shade"></span></span><span class="lg-col"><span data-row="6" data-col="3" class="shade"></span></span><span class="sm-col"><span data-row="6" data-col="4" class="shade"></span><span data-row="6" data-col="5" class="shade"></span><span data-row="6" data-col="6" class="shade"></span></span></div>
+                      <div class="sm-row"><span class="sm-col"><span data-row="5" data-col="0" class="shade"></span><span data-row="5" data-col="1" class="shade"></span><span data-row="5" data-col="2" class="shade"></span></span><span class="lg-col"><span data-row="5" data-col="3" class="shade"></span></span><span class="sm-col"><span data-row="5" data-col="4" class="shade"></span><span data-row="5" data-col="5" class="shade"></span><span data-row="5" data-col="6" class="shade"></span></span></div>
+                      <div class="sm-row"><span class="sm-col"><span data-row="4" data-col="0" class="shade"></span><span data-row="4" data-col="1" class="shade"></span><span data-row="4" data-col="2" class="shade"></span></span><span class="lg-col"><span data-row="4" data-col="3" class="shade"></span></span><span class="sm-col"><span data-row="4" data-col="4" class="shade"></span><span data-row="4" data-col="5" class="shade"></span><span data-row="4" data-col="6" class="shade"></span></span></div>
+                      <div class="lg-row"><span class="sm-col"><span data-row="3" data-col="0" class="shade"></span><span data-row="3" data-col="1" class="shade"></span><span data-row="3" data-col="2" class="shade"></span></span><span class="lg-col"><span data-row="3" data-col="3" class="shade"></span></span><span class="sm-col"><span data-row="3" data-col="4" class="shade"></span><span data-row="3" data-col="5" class="shade"></span><span data-row="3" data-col="6" class="shade"></span></span></div>
+                      <div class="sm-row"><span class="sm-col"><span data-row="2" data-col="0" class="shade"></span><span data-row="2" data-col="1" class="shade"></span><span data-row="2" data-col="2" class="shade"></span></span><span class="lg-col"><span data-row="2" data-col="3" class="shade"></span></span><span class="sm-col"><span data-row="2" data-col="4" class="shade"></span><span data-row="2" data-col="5" class="shade"></span><span data-row="2" data-col="6" class="shade"></span></span></div>
+                      <div class="sm-row"><span class="sm-col"><span data-row="1" data-col="0" class="shade"></span><span data-row="1" data-col="1" class="shade"></span><span data-row="1" data-col="2" class="shade"></span></span><span class="lg-col"><span data-row="1" data-col="3" class="shade"></span></span><span class="sm-col"><span data-row="1" data-col="4" class="shade"></span><span data-row="1" data-col="5" class="shade"></span><span data-row="1" data-col="6" class="shade"></span></span></div>
+                      <div class="sm-row"><span class="sm-col"><span data-row="0" data-col="0" class="shade"></span><span data-row="0" data-col="1" class="shade"></span><span data-row="0" data-col="2" class="shade"></span></span><span class="lg-col"><span data-row="0" data-col="3" class="shade"></span></span><span class="sm-col"><span data-row="0" data-col="4" class="shade"></span><span data-row="0" data-col="5" class="shade"></span><span data-row="0" data-col="6" class="shade"></span></span></div>
                     </div>
                   </div>
                   <div class="well col-md-4"></div>
@@ -225,29 +106,15 @@
               </div>
             </div>
           </div>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
-
-    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
-    <script>
-      (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-      function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-      e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-      e.src='https://www.google-analytics.com/analytics.js';
-      r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-      ga('create','UA-XXXXX-X');ga('send','pageview');
-    </script>
-
-    <!-- build:js scripts/vendor.js -->
-    <!-- endbuild -->
-    
-
-    <!-- build:js scripts/plugins.js -->
-    <!-- endbuild -->
-
-    <!-- build:js scripts/bundle.js -->
+        </div>
+      </div>
+    </div>
+    <!--build:js scripts/vendor.js-->
+    <!--endbuild-->
+    <!--build:js scripts/plugins.js-->
+    <!--endbuild-->
+    <!--build:js scripts/bundle.js-->
     <script src="scripts/bundle.js"></script>
-    <!-- endbuild -->
+    <!--endbuild-->
   </body>
 </html>
