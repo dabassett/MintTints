@@ -29,7 +29,7 @@ $(function() {
   }
 
   function adjustAttribute(attr, step, total, limit) {
-    var limit = limit || 0.12;
+    limit = limit || 0.12;
     var normStep = step - total + 1;
     var adjustment;
 
@@ -48,7 +48,6 @@ $(function() {
 
   function hswlMutateTint(color, row, col, total) {
     var hswl = color.toHswl();
-    var lum, sat;
     return tc({
       h: hswl.h,
       s: adjustAttribute(hswl.s, col, total, 0.25),
@@ -147,7 +146,7 @@ $(function() {
   function updateJumbo() {
     // selects a random hue only to keep the jumbotron colors consistent
     var randomColor = tc({h: Math.floor(Math.random() * 360), s: 0.6, wl: 0.4});
-    var contrastColor = tc.getReadable(randomColor, {contrastRatio: 3.5})
+    var contrastColor = tc.getReadable(randomColor, {contrastRatio: 3.5});
     $('.jumbotron').css({
       'background-color': randomColor.toHexString(),
       'border-color': contrastColor.toHexString(),
@@ -172,7 +171,7 @@ $(function() {
   $('.jumbotron').css('transition', 'none');
   updateJumbo();
   // reset the transition
-  setInterval(function() { $('.jumbotron').css('transition', savedTransition) }, 10);
+  setInterval(function() { $('.jumbotron').css('transition', savedTransition); }, 10);
 
   setInterval(function() { updateJumbo(); }, 120000);
   addColors();

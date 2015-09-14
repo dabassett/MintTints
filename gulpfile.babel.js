@@ -166,6 +166,13 @@ gulp.task('build', ['lint', 'html', 'images', 'fonts', 'extras', 'browserify'], 
   return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
 });
 
+// deploy to origin remote (github)
+gulp.task('deploy', ['build'], () => {
+  return gulp.src('dist')
+    .pipe($.subtree())
+    .pipe($.clean());
+});
+
 gulp.task('default', ['clean'], () => {
   gulp.start('build');
 });
