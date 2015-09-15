@@ -5,6 +5,9 @@ import del from 'del';
 import source from 'vinyl-source-stream';
 import buffer from 'vinyl-buffer';
 import browserify from 'browserify';
+import browserify_shim from 'browserify-shim';
+import debowerify from 'debowerify';
+import watchify from 'watchify';
 
 const $ = gulpLoadPlugins();
 const reload = browserSync.reload;
@@ -42,7 +45,7 @@ const testLintOptions = {
 gulp.task('lint', lint('app/scripts/**/*.js'));
 gulp.task('lint:test', lint('test/spec/**/*.js', testLintOptions));
 
-gulp.task('html', ['jade', 'styles'], () => {
+gulp.task('html', ['views', 'styles', 'browserify'], () => {
   const assets = $.useref.assets({searchPath: ['.tmp', 'app', '.']});
 
   return gulp.src('app/*.html')
@@ -81,7 +84,8 @@ gulp.task('fonts', () => {
 gulp.task('extras', () => {
   return gulp.src([
     'app/*.*',
-    '!app/*.html'
+    '!app/*.html',
+    '!app/*.jade'
   ], {
     dot: true
   }).pipe(gulp.dest('dist'));
@@ -89,7 +93,7 @@ gulp.task('extras', () => {
 
 gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
 
-gulp.task('serve', ['styles', 'fonts', 'browserify', 'jade'], () => {
+gulp.task('serve', ['styles', 'fonts', 'browserify', 'views'], () => {
   browserSync({
     notify: false,
     port: 9000,
@@ -101,21 +105,19 @@ gulp.task('serve', ['styles', 'fonts', 'browserify', 'jade'], () => {
     }
   });
 
-
   gulp.watch([
     'app/images/**/*',
-    '.tmp/fonts/**/*'
+    '.tmp/fonts/**/*',
+    '.tmp/scripts/**/*',
+    '.tmp/*.html'
   ]).on('change', reload);
 
   gulp.watch('app/styles/**/*.scss', ['styles']);
-  gulp.watch('app/scripts/**/*.js', ['js-watch']);
-  gulp.watch('app/templates/**/*.jade', ['jade-watch']);
+  gulp.watch('app/scripts/**/*.js', ['browserify']);
+  gulp.watch('app/templates/**/*.jade', ['views']);
   gulp.watch('app/fonts/**/*', ['fonts']);
   gulp.watch('bower.json', ['fonts']);
 });
-
-gulp.task('js-watch', ['browserify'], reload);
-gulp.task('jade-watch', ['jade'], reload);
 
 gulp.task('serve:dist', () => {
   browserSync({
@@ -145,24 +147,67 @@ gulp.task('serve:test', () => {
 });
 
 gulp.task('browserify', () => {
-  return browserify('app/scripts/main.js')
+  const opts = {
+    entries: './app/scripts/main.js',
+    debug: true,
+    transform: [debowerify, browserify_shim]
+  };
+  return browserify(opts)
     .bundle()
+    .pipe($.plumber({
+      errorHandler: () => { 
+        $.util.log.bind($.util, 'Browserify Error');
+        this.emit('end');
+      }
+    }))
     .pipe(source('bundle.js'))
-    .pipe(gulp.dest('.tmp/scripts'))
     .pipe(buffer())
-    .pipe($.uglify())
-    .pipe(gulp.dest('dist/scripts'));
+    .pipe($.sourcemaps.init({loadMaps: true}))
+      .pipe($.uglify())
+    .pipe($.sourcemaps.write('./'))
+    .pipe(gulp.dest('.tmp/scripts'));
 });
 
-gulp.task('jade', () => {
+
+
+// add custom browserify options here
+const customOpts = {
+  entries: ['./app/scripts/main.js'],
+  debug: true
+};
+var opts = Object.assign({}, watchify.args, customOpts);
+var b = watchify(browserify(opts)); 
+
+// transformations
+b.transform(debowerify);
+b.transform(browserify_shim);
+
+gulp.task('something', bundle);
+b.on('update', bundle);
+b.on('log', $.util.log);
+
+function bundle() {
+  return b.bundle()
+    .on('error', $.util.log.bind($.util, 'Browserify Error'))
+    .pipe(source('bundle.js'))
+    .pipe(buffer())
+    .pipe($.sourcemaps.init({loadMaps: true}))
+      .pipe($.uglify())
+    .pipe($.sourcemaps.write('./'))
+    .pipe(gulp.dest('.tmp/scripts'));
+}
+
+
+gulp.task('views', () => {
   return gulp.src('app/templates/**/*.jade')
     .pipe($.jade({
       pretty: true
     }))
-    .pipe(gulp.dest('./'));
+    .pipe(gulp.dest('.tmp'))
+    .pipe(reload({stream: true}));
 }); 
 
-gulp.task('build', ['lint', 'html', 'images', 'fonts', 'extras', 'browserify'], () => {
+gulp.task('build', ['lint', 'html', 'images', 'fonts', 'extras'], () => {
   return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
 });
 
