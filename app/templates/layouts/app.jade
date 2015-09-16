@@ -1,0 +1,58 @@
+doctype html
+
+html(lang='en')
+  head
+    meta(charset='utf-8')
+    meta(name='description' content='')
+    meta(name='viewport' content='width=device-width, initial-scale=1')
+    title MintTints
+
+    link(rel='apple-touch-icon' href='apple-touch-icon.png')
+    //Place favicon.ico in the root directory
+
+    //build:css styles/vendor.css
+    //endbuild
+
+    //build:css styles/app.css
+    link(rel='stylesheet' href='styles/app.css')
+    //endbuild
+
+  body
+    include ../mixins/_color_slice.jade
+
+    <!--[if lt IE 10]>
+    p.browserupgrade
+      | You are using an outdated browser. Please 
+      a(href='http://browsehappy.com/') upgrade
+      |  your browser to improve your experience.
+    <![endif]-->
+ 
+    .container
+      .header
+        ul.nav.nav-pills.pull-right
+          li.active: a(href='#') Home
+          li: a(href='#') About
+          li: a(href='#') Contact
+
+        h3.text-muted MintTints
+
+      .jumbotron
+        h1 MintTints
+          p.lead Explore the possibilities of automated color design
+          p.lead The freshest shades on the web
+
+      block content
+
+      .footer
+        p I guess something should go here.
+
+
+    //build:js scripts/vendor.js
+    //endbuild
+
+    //build:js scripts/plugins.js
+    //endbuild
+
+    //build:js scripts/bundle.js
+    script(src='scripts/bundle.js')
+    //endbuild

@@ -199,7 +199,7 @@ function bundle() {
 
 
 gulp.task('views', () => {
-  return gulp.src('app/templates/**/*.jade')
+  return gulp.src('app/templates/index.jade')
     .pipe($.jade({
       pretty: true
     }))
