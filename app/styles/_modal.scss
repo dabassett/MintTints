@@ -20,34 +20,29 @@
         display: inline-block;
         background: #444;
         border: 1px solid transparent;
-        border-radius: 0px;
+        border-radius: 2px;
       }
 
-      .well {
+      .slice {
         text-align: center;
       }
 
-      .sm-row, .lg-row, .sm-col, .lg-col {
-        //line-height: 0;
-        //font-size: 0;
-      }
-      .sm-row .shade, {
-        min-height: 20px;
-      }
-      .lg-row .shade {
-        min-height: 68px;
-      }
-      .sm-col .shade {
-        min-width: 20px;
-      }
-      .lg-col .shade {
-        min-width: 68px;
+      .cs-row {
+        line-height: 0px;
       }
 
-      #row2 {
-        .shade {
-          min-height: 148px;
-        }
+      .shade {
+        margin: 1px;
+        min-height: 20px;
+        min-width: 20px;
+      }
+
+      .shade.shade-tall {
+        min-height: 68px;
+      }
+
+      .shade.shade-wide {
+        min-width: 68px;
       }
     }
   }

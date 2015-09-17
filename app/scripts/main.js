@@ -4,6 +4,8 @@ global.jQuery = require('jquery');
 var $ = global.jQuery;
 var tc = require('tinycolor');
 require('bootstrap-sass'); // todo pick only what you need
+var Tint = require('./colors.js');
+window.Tint = Tint;
 
 $(function() {
   var $colorModal = $('#color-info');
@@ -21,39 +23,6 @@ $(function() {
     aaaLarge: $colorModal.find('#aaa-large'),
     aaaSmall: $colorModal.find('#aaa-small')
   };
-
-  function maxContrast(color) {
-    return Math.round(
-      Math.max(tc.readability(color, 'black'),
-               tc.readability(color, 'white')) * 10) / 10;
-  }
-
-  function adjustAttribute(attr, step, total, limit) {
-    limit = limit || 0.12;
-    var normStep = step - total + 1;
-    var adjustment;
-
-    if (normStep < 0) {
-      adjustment = attr * normStep / total;
-    } else {
-      adjustment = ((1 - attr) * normStep / total);
-    }
-
-    if (Math.abs(adjustment) > Math.abs(normStep * limit)) {
-      return attr + (normStep * limit);
-    }
-
-    return attr + adjustment;
-  }
-
-  function hswlMutateTint(color, row, col, total) {
-    var hswl = color.toHswl();
-    return tc({
-      h: hswl.h,
-      s: adjustAttribute(hswl.s, col, total, 0.25),
-      wl: adjustAttribute(hswl.wl, row, total)
-    });
-  }
 
   $.fn.addColorLabel = function(color, contrastColor) {
     $('<h4 class="contrast">' + color.toHexString() + '</h4>')
@@ -110,7 +79,7 @@ $(function() {
         $infoBox.stats.css('color', colors.darkText.toHexString());
         $infoBox.rgb.text(colors.orig.toRgbString());
         $infoBox.lum.text(colors.lum);
-        $infoBox.contrast.text(maxContrast(colors.orig));
+        $infoBox.contrast.text((new Tint(colors.orig)).maxContrast());
 
         $infoBox.samples.css({
           'background-color': colors.orig.toHexString(),
@@ -131,17 +100,39 @@ $(function() {
 
         $infoBox.modal.find('.shades')
           .css('background-color', colors.light.toHexString())
-          .find('.shade')
-            .each(function () {
-              var elem = $(this);
-              var shade = hswlMutateTint(colors.orig, elem.data('row'), elem.data('col'), 4);
-              elem.css('background-color', shade.toHexString());
-            });
+         
+        $infoBox.modal.find('#cs-original').colorslice(color);
+        $infoBox.modal.find('#cs-shifted1').colorslice(color, 60);
+        $infoBox.modal.find('#cs-shifted2').colorslice(color, 120);
+        $infoBox.modal.find('#cs-shifted3').colorslice(color, 180);
+        $infoBox.modal.find('#cs-shifted4').colorslice(color, 240);
+        $infoBox.modal.find('#cs-shifted5').colorslice(color, 300);
 
         $infoBox.modal.modal();
       });
-
   }
+
+  $.fn.colorslice = function(color, hueShift) {
+    var n = 7; // todo, maybe make this a param
+    var slice = (new Tint(color)).shift({h: hueShift}).colorslice(n);
+    $(this).empty();
+    for (var i = n - 1; i >= 0; i--) {
+      var $row = $('<div class="cs-row"></div>');
+      $(this).append($row);
+      for (var j = 0; j < n; j++) {
+        var $shade = $('<span class="shade"></span>');
+        $shade.appendTo($row);
+        $shade.css('background-color', slice[i][j].toStr());
+        if (i == (n - 1) / 2) {
+          $shade.addClass('shade-tall');
+        }
+        if (j == (n - 1) / 2) {
+          $shade.addClass('shade-wide');
+        }
+      }
+    }
+    return this;
+  };
 
   function updateJumbo() {
     // selects a random hue only to keep the jumbotron colors consistent
