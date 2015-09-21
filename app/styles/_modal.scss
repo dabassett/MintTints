@@ -11,6 +11,20 @@
       padding: 0;
     }
 
+    .modal-label {
+      text-align: right;
+    }
+
+    .glyphicon {
+      text-align: center;
+    }
+
+    .stats {
+      p {
+        font-weight: bold;
+      }
+    }
+
     .stats, .text-samples, .shades {
       padding: 15px;
     }

@@ -10,59 +10,69 @@
         .container-fluid
           .stats
             .row
-              .col-md-3 
-                p RGB
-              .col-md-8
-                p#rgb 
-
+              .modal-label.col-md-2.col-sm-3.col-xs-6
+                p Max Contrast :
+              .col-xs-6
+                p#stat-contrast
             .row
-              .col-md-3
-                p Luminance
-              .col-md-8
-                p#luminance
-
-            .row
-              .col-md-3
-                p Max Contrast
-              .col-md-8
-                p#max-contrast
+              .modal-label.col-md-2.col-sm-3.col-xs-6
+                p Hue :
+                p Saturation :
+                p Luminance :
+              .col-md-1.col-sm-3.col-xs-6
+                p#stat-hue
+                p#stat-sat
+                p#stat-lum
+              .modal-label.col-md-2.col-sm-3.col-xs-6
+                p Red:
+                p Green:
+                p Blue:
+              .col-md-1.col-sm-3.col-xs-6
+                p#stat-red
+                p#stat-green
+                p#stat-blue
 
           .text-samples
             .row
               #aa-large.col-md-4
-                h4 AA Large
-                h4.hex #fff
+                span.glyphicon.glyphicon-remove-sign
+                .row
+                  h4.col-sm-8 AA Large
+                  h4.col-sm-4.hex #fff
                 p Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 
               #aaa-large.col-md-4
-                h4 AAA Large / AA Small
-                h4.hex #fff
+                span.glyphicon.glyphicon-remove-sign
+                .row
+                  h4.col-sm-8 AAA Large/AA Small
+                  h4.col-sm-4.hex #fff
                 p Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
               #aaa-small.col-md-4
-                h4 AAA Small
-                h4.hex #fff
+                span.glyphicon.glyphicon-remove-sign
+                .row
+                  h4.col-sm-8 AAA Small
+                  h4.col-sm-4.hex #fff
                 p Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
 
           .shades
             .row
-              .col-md-4
+              .col-md-4.col-sm-6
                 .well
                   .slice#cs-original
-              .col-md-4
+              .col-md-4.col-sm-6
                 .well
                   .slice#cs-shifted1
-              .col-md-4
+              .col-md-4.col-sm-6
                 .well
                   .slice#cs-shifted2
-            .row
-              .col-md-4
+              .col-md-4.col-sm-6
                 .well
                   .slice#cs-shifted3
-              .col-md-4
+              .col-md-4.col-sm-6
                 .well
                   .slice#cs-shifted4
-              .col-md-4
+              .col-md-4.col-sm-6
                 .well
                   .slice#cs-shifted5
 

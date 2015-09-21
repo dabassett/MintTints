@@ -48,7 +48,7 @@ gulp.task('lint:test', lint('test/spec/**/*.js', testLintOptions));
 gulp.task('html', ['views', 'styles', 'browserify'], () => {
   const assets = $.useref.assets({searchPath: ['.tmp', 'app', '.']});
 
-  return gulp.src('app/*.html')
+  return gulp.src('.tmp/*.html')
     .pipe(assets)
     .pipe($.if('*.css', $.minifyCss({compatibility: '*'})))
     .pipe(assets.restore())
@@ -165,38 +165,9 @@ gulp.task('browserify', () => {
     .pipe($.sourcemaps.init({loadMaps: true}))
       .pipe($.uglify())
     .pipe($.sourcemaps.write('./'))
-    .pipe(gulp.dest('.tmp/scripts'));
+    .pipe(gulp.dest('.tmp/scripts'))
+    .pipe(gulp.dest('dist/scripts'));
 });
-
-
-
-// add custom browserify options here
-const customOpts = {
-  entries: ['./app/scripts/main.js'],
-  debug: true
-};
-var opts = Object.assign({}, watchify.args, customOpts);
-var b = watchify(browserify(opts)); 
-
-// transformations
-b.transform(debowerify);
-b.transform(browserify_shim);
-
-gulp.task('something', bundle);
-b.on('update', bundle);
-b.on('log', $.util.log);
-
-function bundle() {
-  return b.bundle()
-    .on('error', $.util.log.bind($.util, 'Browserify Error'))
-    .pipe(source('bundle.js'))
-    .pipe(buffer())
-    .pipe($.sourcemaps.init({loadMaps: true}))
-      .pipe($.uglify())
-    .pipe($.sourcemaps.write('./'))
-    .pipe(gulp.dest('.tmp/scripts'));
-}
-
 
 gulp.task('views', () => {
   return gulp.src('app/templates/index.jade')

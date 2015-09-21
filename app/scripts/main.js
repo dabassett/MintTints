@@ -3,50 +3,49 @@
 global.jQuery = require('jquery');
 var $ = global.jQuery;
 var tc = require('tinycolor');
-require('bootstrap-sass'); // todo pick only what you need
-var Tint = require('./colors.js');
-window.Tint = Tint;
+require('bootstrap-sass');
+var Modal = require('./modal.js');
+
+// jQuery plugins
+// --------------
+$.fn.addColorLabel = function(color, contrastColor) {
+  $('<h4 class="contrast">' + color.toHexString() + '</h4>')
+    .appendTo(this)
+    .css({
+      'color': contrastColor
+    });
+  return this;
+};
+
+$.fn.colorslice = function(tint, hueShift) {
+  var n = 7; // todo, maybe make this a param
+  var slice = tint.shift({h: hueShift}).colorslice(n);
+  $(this).empty();
+  for (var i = n - 1; i >= 0; i--) {
+    var $row = $('<div class="cs-row"></div>');
+    $(this).append($row);
+    for (var j = 0; j < n; j++) {
+      var $shade = $('<span class="shade"></span>');
+      $shade.appendTo($row);
+      $shade.css('background-color', slice[i][j].toStr());
+      if (i === (n - 1) / 2) {
+        $shade.addClass('shade-tall');
+      }
+      if (j === (n - 1) / 2) {
+        $shade.addClass('shade-wide');
+      }
+    }
+  }
+  return this;
+};
 
 $(function() {
-  var $colorModal = $('#color-info');
-  var $infoBox = {
-    modal: $colorModal,
-    header: $colorModal.find('.modal-header'),
-    body: $colorModal.find('.modal-body'),
-    title: $colorModal.find('.modal-title'),
-    lum: $colorModal.find('#luminance'),
-    rgb: $colorModal.find('#rgb'),
-    contrast: $colorModal.find('#max-contrast'),
-    stats: $colorModal.find('.stats'),
-    samples: $colorModal.find('.text-samples'),
-    aaLarge: $colorModal.find('#aa-large'),
-    aaaLarge: $colorModal.find('#aaa-large'),
-    aaaSmall: $colorModal.find('#aaa-small')
-  };
-
-  $.fn.addColorLabel = function(color, contrastColor) {
-    $('<h4 class="contrast">' + color.toHexString() + '</h4>')
-      .appendTo(this)
-      .css({
-        'color': contrastColor
-      });
-    return this;
-  };
+  var colorInfo = new Modal('#color-info');
 
   function addColorBlock(color) {
-    var hswl = color.toHswl();
     var colors = {};
     colors.orig = color;
-    colors.aaLarge = tc.getReadable(color, {level: 'aa', size: 'large', returnBestFit: true});
     colors.aaaLarge = tc.getReadable(color, {level: 'aaa', size: 'large', returnBestFit: true});
-    colors.aaaSmall = tc.getReadable(color, {level: 'aaa', size: 'small', returnBestFit: true});
-    colors.h = hswl.h;
-    colors.s = hswl.s;
-    colors.lum = hswl.wl;
-    colors.dark = tc({h: colors.h, s: colors.s * 0.5, wl: colors.lum * 0.25});
-    colors.darkText = tc.getReadable(colors.dark, {contrastRatio: 6, returnBestFit: true});
-    colors.light = tc({h: colors.h, s: colors.s * 0.5, wl: colors.lum + ((1 - colors.lum) * 0.5)});
-    colors.divider = '2px solid ' + colors.aaaLarge.toHexString();
 
     var $column = $('<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6"></div>').appendTo($('.colors'));
 
@@ -68,71 +67,10 @@ $(function() {
         });
       })
       .click(function() {
-        $infoBox.header.css({
-          'background-color': colors.orig.toHexString(),
-          'border-bottom': colors.divider
-        });
-        $infoBox.title.css('color', colors.aaaLarge.toHexString());
-        $infoBox.title.text('Information for ' + colors.orig.toHexString());
-
-        $infoBox.stats.css('background-color', colors.dark.toHexString());
-        $infoBox.stats.css('color', colors.darkText.toHexString());
-        $infoBox.rgb.text(colors.orig.toRgbString());
-        $infoBox.lum.text(colors.lum);
-        $infoBox.contrast.text((new Tint(colors.orig)).maxContrast());
-
-        $infoBox.samples.css({
-          'background-color': colors.orig.toHexString(),
-          'border-top': colors.divider,
-          'border-bottom': colors.divider
-        })
-          .find('h3')
-          .css('color', colors.aaaLarge.toHexString());
-        $infoBox.aaLarge.css('color', colors.aaLarge.toHexString())
-          .find('.hex')
-          .text(colors.aaLarge.toHexString());
-        $infoBox.aaaLarge.css('color', colors.aaaLarge.toHexString())
-          .find('.hex')
-          .text(colors.aaaLarge.toHexString());
-        $infoBox.aaaSmall.css('color', colors.aaaSmall.toHexString())
-          .find('.hex')
-          .text(colors.aaaSmall.toHexString());
-
-        $infoBox.modal.find('.shades')
-          .css('background-color', colors.light.toHexString())
-         
-        $infoBox.modal.find('#cs-original').colorslice(color);
-        $infoBox.modal.find('#cs-shifted1').colorslice(color, 60);
-        $infoBox.modal.find('#cs-shifted2').colorslice(color, 120);
-        $infoBox.modal.find('#cs-shifted3').colorslice(color, 180);
-        $infoBox.modal.find('#cs-shifted4').colorslice(color, 240);
-        $infoBox.modal.find('#cs-shifted5').colorslice(color, 300);
-
-        $infoBox.modal.modal();
+        colorInfo.build(colors.orig);
+        colorInfo.$.modal(); // call bootstrap's modal plugin
       });
   }
-
-  $.fn.colorslice = function(color, hueShift) {
-    var n = 7; // todo, maybe make this a param
-    var slice = (new Tint(color)).shift({h: hueShift}).colorslice(n);
-    $(this).empty();
-    for (var i = n - 1; i >= 0; i--) {
-      var $row = $('<div class="cs-row"></div>');
-      $(this).append($row);
-      for (var j = 0; j < n; j++) {
-        var $shade = $('<span class="shade"></span>');
-        $shade.appendTo($row);
-        $shade.css('background-color', slice[i][j].toStr());
-        if (i == (n - 1) / 2) {
-          $shade.addClass('shade-tall');
-        }
-        if (j == (n - 1) / 2) {
-          $shade.addClass('shade-wide');
-        }
-      }
-    }
-    return this;
-  };
 
   function updateJumbo() {
     // selects a random hue only to keep the jumbotron colors consistent
