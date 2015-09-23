@@ -1,0 +1,175 @@
+// container
+.sp-mint.sp-container {
+  background-color: transparent;
+  border: none;
+  z-index: 0;
+
+    // input
+    .sp-picker-container {
+      border: none;
+
+      &, .sp-palette-container {
+        width: 260px;
+        padding: 6px;
+        margin: 0;
+
+      }
+    }
+
+    .sp-hue, .sp-color, .sp-val {
+      border: none;
+      border-radius: 2px;
+    }
+
+    .sp-hue {
+      left: 95%;
+      right: 1%;
+      box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.7);
+    }
+
+    .sp-color {
+      right: 12%;
+      box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.7);
+    }
+
+    .sp-dragger, .sp-slider {
+      border-radius: 8px;
+      height: 8px;
+      border: 2px solid #fff;
+      background: rgba(0,0,0, 0.4);
+    }
+
+    .sp-dragger {
+      height: 8px;
+      width: 8px;
+    }
+
+    .sp-slider {
+      left: -8px;
+      right: -8px;
+      opacity: 1;
+    }
+  }
+
+/* Replacer (the little preview div that shows up instead of the <input>) */
+.sp-mint.sp-replacer {
+  border: solid 1px #fff;
+  background: #333;
+  color: #eee;
+  vertical-align: middle;
+}
+.sp-replacer:hover, .sp-replacer.sp-active {
+  border-color: #F0C49B;
+  color: #fff;
+}
+.sp-replacer.sp-disabled {
+  border-color: silver;
+  color: silver;
+}
+.sp-mint .sp-preview {
+  border: solid 1px #999;
+}
+.sp-mint .sp-cancel {
+  color: #f99f9f !important;
+}
+
+.sp-mint, .sp-mint button, .sp-mint input, .sp-color, .sp-hue {
+
+}
+
+/* Input */
+.sp-mint .sp-input-container {
+
+}
+.sp-mint .sp-initial-disabled .sp-input-container {
+
+}
+.sp-mint .sp-input {
+
+}
+.sp-mint .sp-input:focus  {
+
+}
+.sp-mint .sp-input.sp-validation-error {
+
+}
+
+.sp-mint .sp-picker-container , .sp-mint .sp-palette-container {
+
+}
+.sp-mint .sp-picker-container {
+
+}
+
+/* Palettes */
+.sp-mint .sp-palette-container {
+
+}
+
+.sp-mint .sp-palette .sp-thumb-el {
+
+}
+.sp-mint .sp-palette .sp-thumb-el:hover, .sp-mint .sp-palette .sp-thumb-el.sp-thumb-active {
+
+}
+.sp-mint .sp-thumb-el {
+}
+
+/* Initial */
+.sp-mint .sp-initial {
+
+}
+.sp-mint .sp-initial span {
+
+}
+
+/* Buttons */
+.sp-mint .sp-button-container {
+
+}
+
+/* Replacer (the little preview div that shows up instead of the <input>) */
+.sp-mint.sp-replacer {
+
+}
+.sp-mint.sp-replacer:hover, .sp-mint.sp-replacer.sp-active {
+  border-color: #F0C49B;
+  color: #111;
+}
+.sp-mint.sp-replacer.sp-disabled {
+
+}
+.sp-mint .sp-dd {
+
+}
+
+
+
+.sp-mint .sp-preview {
+
+}
+.sp-mint .sp-palette {
+
+}
+.sp-mint .sp-palette .sp-thumb-el {
+
+}
+
+.sp-mint button {
+
+}
+.sp-mint button:hover {
+
+}
+.sp-mint button:active {
+
+}
+.sp-mint .sp-cancel {
+
+}
+.sp-mint .sp-cancel:hover {
+
+}
+.sp-mint .sp-palette span:hover, .sp-mint .sp-palette span.sp-thumb-active {
+
+}

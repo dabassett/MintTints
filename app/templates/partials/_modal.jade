@@ -8,29 +8,7 @@
 
       .modal-body
         .container-fluid
-          .stats
-            .row
-              .modal-label.col-md-2.col-sm-3.col-xs-6
-                p Max Contrast :
-              .col-xs-6
-                p#stat-contrast
-            .row
-              .modal-label.col-md-2.col-sm-3.col-xs-6
-                p Hue :
-                p Saturation :
-                p Luminance :
-              .col-md-1.col-sm-3.col-xs-6
-                p#stat-hue
-                p#stat-sat
-                p#stat-lum
-              .modal-label.col-md-2.col-sm-3.col-xs-6
-                p Red:
-                p Green:
-                p Blue:
-              .col-md-1.col-sm-3.col-xs-6
-                p#stat-red
-                p#stat-green
-                p#stat-blue
+          include _stats.jade
 
           .text-samples
             .row

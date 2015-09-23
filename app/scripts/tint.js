@@ -35,12 +35,34 @@ Tint.prototype = {
   },
 
   // return true when this color meets or exceeds
-  //  the specified contrast ratio, false otherwise
+  // the specified contrast ratio, false otherwise
   hasContrast: function (otherTint, contrast) {
-    if (tc.readability(this.tiny, otherTint.tiny) >= contrast) {
+    // compensate for rounding and other minor deviations
+    var fudge = 0.1;
+    if (tc.readability(this.tiny, otherTint.tiny) + fudge >= contrast) {
       return true;
     }
     return false;
+  },
+
+  // return a string with the highest WCAG contrast level that
+  // otherTint achieves with the current color
+  wcagContrast: function (otherTint) {
+    // compensate for rounding and other minor deviations
+    var fudge = 0.1;
+    var contrast = tc.readability(this.tiny, otherTint.tiny) + fudge;
+    if (contrast < 3) {
+      return 'None';
+    }
+    else if (contrast >= 3 && co8ntrast < 4.5) {
+      return 'AA Large';
+    }
+    else if (contrast >= 4.5 && contrast < 7) {
+      return 'AAA Large / AA Small';
+    }
+    else {
+      return 'AAA Small';
+    }
   },
 
   // return a new Tint that has had one or more attributes set to

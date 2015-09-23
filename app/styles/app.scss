@@ -2,9 +2,11 @@ $icon-font-path: '../fonts/';
 
 // bower:scss
 @import "bower_components/bootstrap-sass/assets/stylesheets/_bootstrap";
+@import "bower_components/spectrum/spectrum";
 // endbower
 
 @import "mixins";
 @import "twbs_overrides";
+@import "spectrum_theme";
 @import "tint";
 @import "modal";

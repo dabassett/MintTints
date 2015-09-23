@@ -10,6 +10,20 @@ body {
   padding-bottom: 20px;
 }
 
+// links should inherit color and be distinguished with an underline
+a {
+    color: inherit;
+    text-decoration: underline;
+  &:hover {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+.row {
+  margin: 1em -15px;
+}
+
 .glyphicon {
   font-size: 35px;
 }

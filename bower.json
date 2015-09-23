@@ -3,7 +3,8 @@
   "private": true,
   "dependencies": {
     "bootstrap-sass": "~3.3.5",
-    "tinycolor": "git://github.com/dabassett/TinyColor#hswl"
+    "tinycolor": "git://github.com/dabassett/TinyColor#hswl",
+    "spectrum": "~1.7.1"
   },
   "overrides": {
     "bootstrap-sass": {

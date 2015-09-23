@@ -4,7 +4,10 @@ global.jQuery = require('jquery');
 var $ = global.jQuery;
 var tc = require('tinycolor');
 require('bootstrap-sass');
+var Tint = require('./tint.js');
 var Modal = require('./modal.js');
+var TintEditor = require('./editor.js');
+require('spectrum')($);
 
 // jQuery plugins
 // --------------
@@ -40,6 +43,9 @@ $.fn.colorslice = function(tint, hueShift) {
 };
 
 $(function() {
+  var editor = new TintEditor({
+    container: '.colorpicker'
+  });
   var colorInfo = new Modal('#color-info');
 
   function addColorBlock(color) {
@@ -89,6 +95,49 @@ $(function() {
       var randomColor = tc.random();
       addColorBlock(randomColor);
     }
+  }
+
+  // initialize the color picker
+  $('#colorpicker').spectrum({
+      color: tc.random().toHexString(),
+      theme: 'sp-mint',
+      flat: true,
+      showInput: false,
+      showButtons: false,
+      showInitial: true,
+      move: function (color) {
+        updateDemo(color, 'COLORPICKER');
+      }
+  });
+
+  // update the demo box, colorpicker and stats display when any of
+  // the inputs are changed
+  function updateDemo(color, source) {
+    var tint = new Tint(color.toRgb());
+    var $parent = $('.colorpicker');
+
+    // colorpicker initiated the update, change stats values
+    if (source === 'COLORPICKER') {
+      editor.update(tint);
+    }
+
+    // a change to the contrast input boxes initiated the update
+    if (source === 'CONTRAST') {
+      ;
+    }
+
+    $('.text-sample').css({
+      'background-color': tint.toStr()
+    });
+    $('.aa-large').css({
+      'color': tint.contrastColor($parent.find('.level-large').val()).toStr()
+    });
+    $('.aaa-large').css({
+      'color': tint.contrastColor($parent.find('.level-medium').val()).toStr()
+    });
+    $('.aaa-small').css({
+      'color': tint.contrastColor($parent.find('.level-small').val()).toStr()
+    });
   }
 
   $('#more-colors').click(function() {

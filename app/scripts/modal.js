@@ -4,6 +4,7 @@ var $ = require('jquery');
 require('bootstrap-sass');
 var Util = require('./util.js');
 var Tint = require('./tint.js');
+var TintEditor = require('./editor.js');
 
 // logic for the color info modal
 var Modal = function (selector) {
@@ -12,14 +13,8 @@ var Modal = function (selector) {
   this.header = this.$.find('.modal-header');
   this.body = this.$.find('.modal-body');
   this.title = this.$.find('.modal-title');
-  this.stats = this.$.find('.stats');
-  this.red = this.$.find('#stat-red');
-  this.green = this.$.find('#stat-green');
-  this.blue = this.$.find('#stat-blue');
-  this.hue = this.$.find('#stat-hue');
-  this.sat = this.$.find('#stat-sat');
-  this.lum = this.$.find('#stat-lum');
-  this.contrast = this.$.find('#stat-contrast');
+  this.$stats = this.$.find('.stats');
+  this.editor = new TintEditor({container: this.$});
   this.samples = this.$.find('.text-samples');
   this.aaLarge = this.$.find('#aa-large');
   this.aaaLarge = this.$.find('#aaa-large');
@@ -27,7 +22,7 @@ var Modal = function (selector) {
 };
 
 Modal.prototype = {
-  build: function(tint) {
+  build: function (tint) {
     tint = new Tint(tint);
 
     var colors = {};
@@ -45,16 +40,9 @@ Modal.prototype = {
     this.title.css('color', colors.aaaLarge.toStr());
     this.title.text('Information for ' + tint.toStr());
 
-    this.stats.css('background-color', colors.dark.toStr());
-    this.stats.css('color', colors.darkText.toStr());
-
-    this.red.text(tint.r);
-    this.green.text(tint.g);
-    this.blue.text(tint.b);
-    this.hue.text(Util.round(tint.h, 0));
-    this.sat.text(Util.round(tint.s, 4));
-    this.lum.text(Util.round(tint.wl, 4));
-    this.contrast.text(Util.round(tint.maxContrast(), 1));
+    this.$stats.css('background-color', colors.dark.toStr());
+    this.$stats.css('color', colors.darkText.toStr());
+    this.editor.update(tint);
 
     this.samples.css({
       'background-color': tint.toStr(),
@@ -74,9 +62,9 @@ Modal.prototype = {
       .text(colors.aaaSmall.toStr());
 
     // set readability icons
-    this.setTextReadabilityIcon(this.aaLarge, tint.hasContrast(colors.aaLarge, 2.9), tint);
-    this.setTextReadabilityIcon(this.aaaLarge, tint.hasContrast(colors.aaaLarge, 4.4), tint);
-    this.setTextReadabilityIcon(this.aaaSmall, tint.hasContrast(colors.aaaSmall, 6.9), tint);
+    this.setTextReadabilityIcon(this.aaLarge, tint.hasContrast(colors.aaLarge, 3), tint);
+    this.setTextReadabilityIcon(this.aaaLarge, tint.hasContrast(colors.aaaLarge, 4.5), tint);
+    this.setTextReadabilityIcon(this.aaaSmall, tint.hasContrast(colors.aaaSmall, 7), tint);
 
     this.$.find('.shades')
       .css('background-color', colors.light.toStr());

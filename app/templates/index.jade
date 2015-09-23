@@ -1,7 +1,65 @@
 extends layouts/app
 
 block content
-  .row.marketing
+  .colorpicker
+    .stats.form-inline
+      .row.text-sample
+        .col-md-4
+          h2.aa-large
+            | Welcome to MintTints!
+          h4.aaa-large
+            | Here to help designers pair text and background colors that are both beautiful and easy to read
+          p.aaa-small
+            | MintTints can take any color and generate analogous colors that satisfy 
+            a(href="http://www.w3.org/TR/UNDERSTANDING-WCAG20/visual-audio-contrast-contrast.html") WCAG 2.0
+            |  contrast ratio requirements. This means that you no longer need to fiddle with finicky formulae to create perfect color palletes.
+        .col-md-4
+          h2.aa-large
+            | Powered by HSWL
+          h4.aaa-large
+            | Functional yet familiar
+          p.aaa-small
+            | HSWL is a hybrid color space that combines the hue and saturation attributes from HSL and replaces lightness with 
+            a(href="http://www.w3.org/WAI/GL/wiki/Relative_luminance") WCAG's luminance formula
+            | . This connection allows you to specify colors by a desired contrast directly, without any of the "guess and check" methods that would otherwise be required.
+      .row
+        .col-lg-3.col-md-5.col-sm-6
+          input#colorpicker
+        .col-lg-3.col-md-4.col-sm-6
+          div
+            label Max Contrast
+            input.stat-contrast
+          div
+            label Hue
+            input.stat-hue
+          div
+            label Saturation
+            input.stat-sat
+          div
+            label Luminance
+            input.stat-lum
+          div
+            label Red
+            input.stat-red
+          div
+            label Green
+            input.stat-green
+          div
+            label Blue
+            input.stat-blue
+        .col-lg-3.col-md-4.col-sm-6
+          h4 Text Contrast Levels
+          div
+            label Large
+            input.level-large(value="3")
+          div
+            label Medium
+            input.level-medium(value="4.5")
+          div
+            label Small
+            input.level-small(value="7")
+
+  .row.palette
   .row.colors
   .row
     button#more-colors.btn.btn-primary.btn-lg.btn-block(type='button') More Colors!

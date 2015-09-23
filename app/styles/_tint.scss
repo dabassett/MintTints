@@ -15,3 +15,14 @@
     line-height: 20px;
   }
 }
+
+.colorpicker {
+  label {
+    width: 7em;
+    text-align: right;
+  }
+  input {
+    width: 4em;
+    text-align: center;
+  }
+}
