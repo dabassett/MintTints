@@ -16,12 +16,13 @@
   }
 }
 
-.colorpicker {
+.editor {
   label {
     width: 7em;
     text-align: right;
   }
-  input {
+  // contrast input boxes
+  .te-large, .te-medium, .te-small {
     width: 4em;
     text-align: center;
   }

@@ -42,7 +42,7 @@ Modal.prototype = {
 
     this.$stats.css('background-color', colors.dark.toStr());
     this.$stats.css('color', colors.darkText.toStr());
-    this.editor.update(tint);
+    this.editor.setTint(tint);
 
     this.samples.css({
       'background-color': tint.toStr(),
