@@ -16,12 +16,16 @@ var TintEditor = function(opts) {
   this.tint = opts.tint || new Tint('black');
   this.format = opts.format || 'hswl';
   this.$container = $(opts.container || $('html'));
+
+  // todo - remove these
   this.$red = $(opts.red || this.$container.find('.te-red'));
   this.$green = $(opts.green || this.$container.find('.te-green'));
   this.$blue = $(opts.blue || this.$container.find('.te-blue'));
   this.$hue = $(opts.hue || this.$container.find('.te-hue'));
   this.$saturation = $(opts.saturation || this.$container.find('.te-sat'));
   this.$luminance = $(opts.luminance || this.$container.find('.te-lum'));
+  // ---
+
   this.$contrast = $(opts.contrast || this.$container.find('.te-contrast'));
   this.$textSample = $(opts.textSample || this.$container.find('.te-text-sample'));
   this.$lgText = $(opts.lgText || this.$container.find('.te-lg-text'));
@@ -37,12 +41,14 @@ var TintEditor = function(opts) {
   this.$hswl = $(opts.hswl || this.$container.find('.te-hswl'));
   this.$input = $(opts.input || this.$container.find('.te-input'));
 
+  // set initial color
+  this.setTint(new Tint(tc.random()));
 
   // initialize the color picker
   if (opts.colorpicker) {
     this.$colorpicker = this.$container.find(opts.colorpicker);
     this.$colorpicker.spectrum({
-        color: tc.random().toHexString(),
+        color: this.tint.toStr(),
         theme: 'sp-mint',
         flat: true,
         showInput: false,
@@ -86,7 +92,6 @@ TintEditor.prototype = {
 
   // update the input box when colorpicker changes
   updateInput: function () {
-    console.log('updateInput()');
     var str;
     if (this.format === 'hswl') { // todo - fix this hack properly
       str = this.tint.tiny.toHswlString();

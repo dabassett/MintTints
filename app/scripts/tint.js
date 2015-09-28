@@ -5,14 +5,10 @@ var tc = require('tinycolor');
 // the primary color model
 var Tint = function (color) {
   this.tiny = tc(color);
-  this.hswl = this.tiny.toHswl();
-  this.rgb = this.tiny.toRgb();
-  this.r = this.rgb.r;
-  this.g = this.rgb.g;
-  this.b = this.rgb.b;
-  this.h = this.hswl.h;
-  this.s = this.hswl.s;
-  this.wl = this.hswl.wl;
+  var hswl = this.tiny.toHswl();
+  this.h = hswl.h;
+  this.s = hswl.s;
+  this.wl = hswl.wl;
 };
 
 Tint.prototype = {
@@ -54,7 +50,7 @@ Tint.prototype = {
     if (contrast < 3) {
       return 'None';
     }
-    else if (contrast >= 3 && co8ntrast < 4.5) {
+    else if (contrast >= 3 && contrast < 4.5) {
       return 'AA Large';
     }
     else if (contrast >= 4.5 && contrast < 7) {
@@ -65,24 +61,43 @@ Tint.prototype = {
     }
   },
 
+  // a mutator for the hswl attributes
+  setHSWL: function (attrs) {
+    attrs = attrs || {};
+    var hswl = Tint.normalize({
+      h: Tint.validateAttr(attrs.h, this.h),
+      s: Tint.validateAttr(attrs.s, this.s),
+      wl: Tint.validateAttr(attrs.wl, this.wl)
+    });
+    this.h = hswl.h;
+    this.s = hswl.s;
+    this.wl = hswl.wl;
+    // note: at the moment tinycolor mutates the input so placing
+    // this before the individual attributes would cause issues
+    this.tiny = tc(hswl);
+    return this;
+  },
+
   // return a new Tint that has had one or more attributes set to
   // the provided values. Setting all three values essentially
   // produces a new color
   set: function (attrs) {
+    attrs = attrs || {};
     return new Tint(Tint.normalize({
-      h: attrs.h || this.h,
-      s: attrs.s || this.s,
-      wl: attrs.wl || this.wl
+      h: Tint.validateAttr(attrs.h, this.h),
+      s: Tint.validateAttr(attrs.s, this.s),
+      wl: Tint.validateAttr(attrs.wl, this.wl)
     }));
   },
 
   // return a new Tint that has been color shifted in
   // one or more of the hswl dimensions
   shift: function (attrs) {
+    attrs = attrs || {};
     return new Tint(Tint.normalize({
-      h: (attrs.h || 0) + this.h,
-      s: (attrs.s || 0) + this.s,
-      wl: (attrs.wl || 0) + this.wl
+      h: Tint.validateAttr(attrs.h, 0) + this.h,
+      s: Tint.validateAttr(attrs.s, 0) + this.s,
+      wl: Tint.validateAttr(attrs.wl, 0) + this.wl
     }));
   },
 
@@ -142,20 +157,19 @@ Tint.adjustAttr = function(attr, percent) {
   }
 };
 
+// replace undefined values with the fallback
+Tint.validateAttr = function(attr, fallback) {
+  return typeof attr === 'undefined' ? fallback : attr;
+};
+
 // clamp the hswl attributes to valid values
 Tint.normalize = function(hswl) {
-  var out = {h: 0, s: 0, wl: 0};
   hswl = hswl || {};
-  if (hswl.h) {
-    out.h = Tint.normalizeHue(hswl.h);
-  }
-  if (hswl.s) {
-    out.s = Tint.normalize01(hswl.s);
-  }
-  if (hswl.wl) {
-    out.wl = Tint.normalize01(hswl.wl);
-  }
-  return out;
+  return {
+    h: Tint.normalizeHue(hswl.h),
+    s: Tint.normalize01(hswl.s),
+    wl: Tint.normalize01(hswl.wl)
+  };
 };
 
 // cyclically map any hue input (negative too!) to [0, 360]
@@ -163,12 +177,12 @@ Tint.normalize = function(hswl) {
 //   375 => 15
 //   -42 => 318
 Tint.normalizeHue = function(hue) {
-  return ((hue % -360) + 360) % 360;
+  return (((hue || 0) % -360) + 360) % 360;
 };
 
 // clamp saturation or luminance to valid range [0, 1]
 Tint.normalize01 = function(attr) {
-  return Math.max(0, Math.min(attr, 1));
+  return Math.max(0, Math.min((attr || 0), 1));
 };
 
 // convert an array index to a percentage of total

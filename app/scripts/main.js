@@ -7,6 +7,8 @@ require('bootstrap-sass');
 var Tint = require('./tint.js');
 var Modal = require('./modal.js');
 var TintEditor = require('./editor.js');
+var Palette = require('./palette.js');
+global.Palette = Palette;
 require('spectrum')($);
 
 // jQuery plugins
@@ -49,6 +51,11 @@ $(function() {
     colorpicker: '#colorpicker'
   });
   var colorInfo = new Modal('#color-info');
+
+  // initialize the palette builder
+  var palette = new Palette({
+    container: '.palette'
+  });
 
   function addColorBlock(color) {
     var colors = {};
