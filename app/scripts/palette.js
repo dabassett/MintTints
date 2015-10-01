@@ -9,21 +9,99 @@ require('spectrum')($);
 // build a palette of colors that can have complex
 // dependencies
 var Palette = function(opts) {
+  var _this = this;
   this.tints = opts.tints || [];
   this.$container = $(opts.container);
+  this.active = false;
 
   if (this.tints.length === 0) {
     this.random();
   }
-  this.currentTint = this.tints[1];
-
-  this.render();
+  this._render();
+  this.setCurrentTint(this.tints[0]);
 };
 
 Palette.prototype = {
   // add palette markup to the dom
-  render: function() {
+  _render: function() {
     var _this = this;
+
+    this.inputs = {
+      $name: $('<input>', {
+        type: 'text',
+        data: {
+          method: 'swatchName',
+          label: 'Name'
+        }
+      }),
+      $color: $('<input>', {
+        type: 'text',
+        data: {
+          method: 'rawColor',
+          label: 'Color'
+        }
+      }),
+      $parent: $('<select>', {
+        id: 'parent',
+        data: {
+          method: 'parent',
+          label: 'Inherit From'
+        }
+      }),
+      $hueShift: $('<input>', {
+        type: 'range',
+        max: 180,
+        min: -180,
+        data: {
+          method: 'hueShift',
+          label: 'Hue Adjust'
+        }
+      }),
+      $hueBlend: $('<input>', {
+        type: 'range',
+        data: {
+          method: 'hueBlend',
+          label: 'Hue Blend'
+        }
+      }),
+      $satAdjust: $('<input>', {
+        type: 'range',
+        min: -1,
+        max: 1,
+        step: 0.01,
+        data: {
+          method: 'satAdjust',
+          label: 'Sat Adjust'
+        }
+      }),
+      $satBlend: $('<input>', {
+        type: 'range',
+        data: {
+          method: 'satBlend',
+          label: 'Sat Blend'
+        }
+      }),
+      $lumAdjust: $('<input>', {
+        type: 'range',
+        min: -1,
+        max: 1,
+        step: 0.01,
+        data: {
+          method: 'lumAdjust',
+          label: 'Lum Adjust'
+        }
+      }),
+      $lumContrast: $('<input>', {
+        type: 'range',
+        min: 1,
+        max: 21,
+        step: 0.1,
+        data: {
+          method: 'lumContrast',
+          label: 'Contrast'
+        }
+      })
+    };
 
     this.$swatches = $('<div></div>', {
       'class': 'pa-swatches'
@@ -32,91 +110,58 @@ Palette.prototype = {
       tint.$swatch.appendTo(_this.$swatches);
     });
 
-    this.inputs = {
-      name: $('<input>', {
-        name: 'swatchName'
-      }),
-      color: $('<input>', {
-        name: 'rawColor'
-      }),
-      parent: $('<input>', {
-        name: 'parent'
-      }),
-      hueShift: $('<input>', {
-        name: 'hueShift',
-        type: 'range',
-        max: 180,
-        min: -180,
-      }),
-      hueBlend: $('<input>', {
-        name: 'hueBlend',
-        type: 'range'
-      }),
-      satAdjust: $('<input>', {
-        name: 'satAdjust',
-        type: 'range',
-        min: -1,
-        max: 1,
-        step: 0.01
-      }),
-      satBlend: $('<input>', {
-        name: 'satBlend',
-        type: 'range'
-      }),
-      lumAdjust: $('<input>', {
-        name: 'lumAdjust',
-        type: 'range',
-        min: -1,
-        max: 1,
-        step: 0.01
-      }),
-      lumContrast: $('<input>', {
-        name: 'lumContrast',
-        type: 'range',
-        min: 1,
-        max: 21,
-        step: 0.1
-      })
-    };
 
-    // todo fit this in somehow
-    this.$colorpicker = $('<input>', { 'class': 'pa-colorpicker' });
-
+    // add labels to the inputs
     var inputLabels = [];
     $.each(this.inputs, function(index, $input) {
-      var $label = $('<label>', { text: $input.attr('name') });
+      var $label = $('<label>', { text: $input.data('label') });
       $label.append($input);
       inputLabels.push($label);
-
-      // set initial slider values
-      $input.val(_this.currentTint[$input.attr('name')]);
     });
 
+    // add options to the select box
+    this.inputs.$parent.append($('<option>', {
+      text: 'None',
+      value: ''
+    }));
+    this.tints.forEach(function(tint) {
+      _this.inputs.$parent.append(_this._getParentOption(tint));
+    });
+
+    this.$addButton = $('<button>', {
+      'class': 'pa-add',
+      text: 'Add'
+    });
+
+    this.$removeButton = $('<button>', {
+      'class': 'pa-remove',
+      text: 'Remove'
+    });
+
+    this.$colorpicker = $('<input>', { 'class': 'pa-colorpicker' });
+    
     this.$editor = $('<div></div>', {
       'class': 'pa-editor'
     });
 
-    this.$editor.append(inputLabels);
-    this.$editor.append(this.$colorpicker);
+    this.$editor
+      .append(this.$addButton)
+      .append(this.$removeButton)
+      .append(inputLabels)
+      .append(this.$colorpicker);
 
     this.$container.append(this.$swatches, this.$editor);
 
-    // event handler for editor controls
-    //   todo - this fires on any mouseover of the input
-    this.$editor.on('change mousemove', 'input[type=range]', function() {
-      console.log('Event on:', $(this).attr('name'), 'Value:', $(this).val());
-      // todo make a setter for this
-      _this.currentTint[$(this).attr('name')] = parseFloat($(this).val());
-      _this.currentTint.update();
-    });
-
     // init the colorpicker
-    this.$colorpicker.spectrum({
+    this.$colorpicker.spectrum({ 
       theme: 'sp-mint',
       showInput: false,
       showButtons: false,
       showInitial: true,
-      move: function (color) { return null; }
+      move: function (color) {
+        _this.currentTint.setAttr('rawColor', color.toRgb());
+        _this.inputs.$color.val(color.toHexString());
+      }
     });
   },
 
@@ -125,7 +170,7 @@ Palette.prototype = {
     var bg = new Palette.Tint(tc.random(), {
       swatchName: 'background'
     });
-    var h1 = new Palette.Tint(tc.random(), {
+    var h1 = new Palette.Tint(null, {
       swatchName: 'heading1',
       parent: bg,
       lumContrast: 3
@@ -145,28 +190,262 @@ Palette.prototype = {
       parent: bg,
       lumContrast: 3,
       satAdjust: 0.5,
-      hueShift: 180,
-      hueBlend: 50
+      hueShift: 60
     });
     this.tints = [bg, h1, h2, p, detail];
   },
 
-  // check the palette for possible dependency cycles and
-  // disable any options that could cause one
-  checkForCycles: function () {
-
-  },
-
   // add a new palette color
-  addColor: function () {
-
+  addTint: function (color) {
+    var newColor = (color ? tc(color) : tc.random());
+    var tint = new Palette.Tint(newColor, {
+      swatchName: 'Swatch' + Palette.swatchesCreated
+    });
+    this.tints.push(tint);
+    tint.$swatch.appendTo(this.$swatches);
+    this.inputs.$parent.append(this._getParentOption(tint));
+    this.setCurrentTint(tint);
+    Palette.swatchesCreated++;
   },
 
   // remove a palette color
-  removeColor: function () {
+  removeTint: function (tint) {
+    var index = this.tints.indexOf(tint);
+    if (index > -1) {
+      this.tints.splice(index, 1);
+    }
+    this._updateParentOptions(tint.swatchName, null)
+    tint.destroy();
+    this.setCurrentTint();
+  },
 
+  // set the current tint attribute to the user's selection and
+  // update the editor controls to the current tint selection
+  setCurrentTint: function (tint) {
+    if (tint) {
+      this.currentTint = tint;
+    } else if (this.tints.length > 0) {
+      this.currentTint = this.tints[0];
+    } else {
+      this.currentTint = null;
+      this._deactivateControls();
+      return;
+    }
+
+    this._activateControls();
+    this._disableParentOptions(this.currentTint);
+    this.$swatches.find('.active').removeClass('active');
+    this.currentTint.$swatch.addClass('active');
+    this.inputs.$name.removeClass('invalid');
+
+    // set input values
+    var _this = this;
+    $.each(this.inputs, function(index, $input) {
+      $input.val(_this.currentTint[$input.data('method')]);
+    });
+
+    // set the parent select
+    if (this.currentTint.parent) {
+      this.inputs.$parent.val(this.currentTint.parent.getName());
+    }
+
+    this._updateColorpicker(this.currentTint.rawColor);
+    this._toggleInputs();
+  },
+
+  _getParentOption: function (paletteTint) {
+    var optionName = paletteTint.swatchName || paletteTint.toStr();
+    return $('<option>', {
+      value: optionName,
+      text: optionName
+    });
+  },
+
+  _updateParentOptions: function (oldOpt, newOpt) {
+    var $option = this.inputs.$parent.find('option[value="' + oldOpt + '"]');
+    // update the option value and text
+    if (newOpt) {
+      $option.val(newOpt).text(newOpt);
+    // of if newOpt is null, delete the option
+    } else {
+      $option.remove();
+    }
+  },
+
+  // disable any parent choices that would create an infinite loop
+  _disableParentOptions: function (paletteTint) {
+    var dependents = this._allDependents(paletteTint);
+    var $options = this.inputs.$parent.find('option');
+    $options.each(function() {
+      var $opt = $(this);
+      var disable = false;
+      dependents.forEach(function(dep) {
+        if (dep.swatchName === $opt.val()) {
+          disable = true;
+        }
+      });
+      disable ? $opt.attr('disabled', 'disabled') : $(this).removeAttr('disabled');
+    });
+  },
+
+  // automatically disable and enable editor controls that can be used
+  // with the tint's current state
+  _toggleInputs: function () {
+    if (this.currentTint.parent) {
+      this.inputs.$hueBlend.prop('disabled', false);
+      this.inputs.$satBlend.prop('disabled', false);
+      this.inputs.$lumContrast.prop('disabled', false);
+      this.inputs.$lumAdjust.prop('disabled', true);
+    } else {
+      this.inputs.$hueBlend.prop('disabled', true);
+      this.inputs.$satBlend.prop('disabled', true);
+      this.inputs.$lumContrast.prop('disabled', true);
+      this.inputs.$lumAdjust.prop('disabled', false);
+    }
+  },
+
+  // recursively generate a list of all invalid parent choices this paletteTint
+  _allDependents: function (paletteTint, dependents) {
+    dependents = dependents || [];
+    dependents.push(paletteTint);
+    var _this = this;
+    paletteTint.children.forEach(function(childTint) {
+      dependents = _this._allDependents(childTint, dependents);
+    });
+    return dependents;
+  },
+
+  _updateColorpicker: function (newColor) {
+    this.$colorpicker.spectrum('set', newColor);
+  },
+
+  // returns a validation object members 'valid' being true or false and
+  // any error messages in the 'errors' array
+  _validName: function (name) {
+    var out = {errors: []};
+    // check for null
+    if (name === '') {
+      out.errors.push('Please enter a name')
+    }
+    // check for duplicates
+    this.tints.forEach(function(tint) {
+      if (name === tint.swatchName) {
+        out.errors.push('That name has already been used');
+      }
+    });
+    out.valid = (out.errors.length ? false : true);
+    return out;
+  },
+
+  _activateControls: function () {
+    if (!this.active) {
+      this._bindHandlers();
+      $.each(this.inputs, function(key, $input) {
+        $input.prop('disabled', false);
+      });
+      this.$colorpicker.spectrum('enable');
+      this.active = true;
+    }
+  },
+
+  _deactivateControls: function () {
+    this._unbindHandlers();
+    $.each(this.inputs, function(key, $input) {
+      $input.prop('disabled', true);
+    });
+    this.$colorpicker.spectrum('disable');
+    this.active = false;
+  },
+
+  _bindHandlers: function () {
+    // palette swatch selection
+    this.$swatches.off();
+    this.$swatches.on('click', '.pa-swatch', $.proxy(this.events.selectSwatch, this));
+
+    // editor controls
+    this.$editor.on('change input', 'input[type=range]', $.proxy(this.events.updateSwatch, this));
+    this.$editor.on('change', 'input[type=text]', $.proxy(this.events.updateSwatch, this));
+    this.inputs.$parent.on('change', $.proxy(this.events.changeSwatchParent, this));
+    this.$removeButton.on('click', $.proxy(this.events.removePaletteTint, this));
+    this.$addButton.off();
+    this.$addButton.on('click', $.proxy(this.events.addPaletteTint, this));
+  },
+
+  _unbindHandlers: function () {
+    this.$editor.off();
+    this.inputs.$parent.off();
+    this.$removeButton.off();
+  },
+
+  // event handlers
+  // --------------
+  events: {
+    updateSwatch: function (event) {
+      var $elem = $(event.target);
+      var method = $elem.data('method');
+      // todo - sanitize inputs for good measure
+      var value = $elem.val();
+      console.log('updateSwatch on:', method, 'Value:', value);
+
+      if (method === 'swatchName') {
+        var validation = this._validName(value);
+        if (validation.valid) {
+          this.inputs.$name.removeClass('invalid');
+          var oldName = this.currentTint.swatchName;
+          this.currentTint.swatchName = value;
+          this._updateParentOptions(oldName, value);
+        } else {
+          this.inputs.$name.addClass('invalid');
+        }
+      } else if (method === 'rawColor') {
+        this.currentTint.setAttr(method, value);
+        this._updateColorpicker(value);
+      // input was from a range (slider)
+      } else {
+        this.currentTint.setAttr(method, parseFloat(value));
+      }
+    },
+
+    selectSwatch: function (event) {
+      var $clickedSwatch = $(event.target);
+      if (!$clickedSwatch.hasClass('active')) {
+        var result = $.grep(this.tints, function(tint) {
+          return $clickedSwatch.is(tint.$swatch);
+        });
+        if (result.length === 0) {
+          // todo throw an error
+          console.log('Element Not Found')
+        } else {
+          this.setCurrentTint(result[0]);
+        }
+      }
+    },
+
+    changeSwatchParent: function (event) {
+      var parentName = this.inputs.$parent.val();
+      var selectedTint;
+      this.tints.forEach(function(tint) {
+        if (tint.getName() === parentName) {
+          selectedTint = tint;
+        }
+      });
+      this.currentTint.setParent(selectedTint);
+      this.currentTint.update();
+      this._toggleInputs();
+    },
+
+    addPaletteTint: function (event) {
+      this.addTint();
+    },
+
+    removePaletteTint: function (event) {
+      this.removeTint(this.currentTint);
+    }
   }
 };
+
+// a running count of created swatches
+Palette.swatchesCreated = 0;
 
 // the palette tint class inherits from tint
 // and adds logic for color dependencies
@@ -177,7 +456,7 @@ Palette.Tint = function(color, opts) {
   Tint.call(this, color);
 
   // color prior to any processing
-  this.rawColor = color;
+  this.rawColor = tc(color).toHexString();
   this.swatchName = opts.swatchName || '';
   this.$swatch = $('<div></div>', {
     'class': 'pa-swatch'
@@ -185,8 +464,10 @@ Palette.Tint = function(color, opts) {
 
   // note: references to other tints for color editing purposes
   //       not related to the class's inheritance structure
-  this.parent = opts.parent || null;
-  this.child = opts.child || null;
+  if (opts.parent) {
+    this.setParent(opts.parent);
+  }
+  this.children = [];
 
   // attribute transformations
   this.hueShift = opts.hueShift || 0;
@@ -207,46 +488,104 @@ Palette.Tint.prototype.constructor = Palette.Tint;
 
 
 // set an attribute and update the color
-Palette.Tint.prototype.setAttr = function(attr, fn) {
-  // todo add dynamic function calling
-  this.attrs.h = Object.merge();
+Palette.Tint.prototype.setAttr = function(attr, value) {
+  if (attr === 'parent') {
+    this.setParent(value);
+  } else if (attr === 'rawColor') {
+    this.setRawColor(value);
+  } else {
+    this[attr] = value;
+  }
   this.update();
+};
+
+Palette.Tint.prototype.setParent = function(newParent) {
+  if (this.parent) {
+    this.parent._removeChild(this);
+  }
+  if (newParent) {
+    newParent._addChild(this);
+  }
+  this.parent = newParent;
+};
+
+Palette.Tint.prototype.setRawColor = function(newColor) {
+  this.rawColor = tc(newColor).toHexString();
+};
+
+Palette.Tint.prototype.getName = function() {
+  // todo - enforce a unique non-null name instead
+  if (this.swatchName) {
+    return this.swatchName;
+  } else {
+    return this.toStr();
+  }
+};
+
+Palette.Tint.prototype._addChild = function(child) {
+  if (this.children.indexOf(child) === -1) {
+    this.children.push(child);
+  }
+};
+
+Palette.Tint.prototype._removeChild = function(child) {
+  var index = this.children.indexOf(child);
+  if (index > -1) {
+    this.children.splice(index, 1);
+  }
 };
 
 // update the color after changing one of its attributes
 Palette.Tint.prototype.update = function() {
-  // todo clean up this whole function
-  var output;
-  var inputTint = new Tint(this.rawColor);
+  var output, hue, sat, lum;
 
   if (this.parent) {
+    var inputHsl = tc(this.rawColor).toHsl();
     output = this.parent.set();
+    hue = output.h;
+    sat = output.s;
+    lum = output.wl;
+    // blend parent with base color
+    if (this.hueBlend !== 0) {
+      hue = output.blend({h: inputHsl.h}, this.hueBlend).h;
+    }
+    if (this.satBlend !== 0) {
+      sat = output.blend({s: inputHsl.s}, this.satBlend).s;
+    }
+    // contrast parent color
+    if (this.lumContrast > 1) {
+      lum = output.calcLuminance(this.lumContrast).best;
+    }
+  // the tint is not inheriting another color
   } else {
     output = new Tint(this.rawColor);
+    hue = output.h;
+    sat = output.s;
+    lum = Tint.adjustAttr(output.wl, this.lumAdjust)
   }
 
-  // apply transforms
-  output = output.setHSWL({
-      s: Tint.adjustAttr(output.s, this.satAdjust),
-      wl: Tint.adjustAttr(output.wl, this.lumAdjust)
-    })
-    .shift({h: this.hueShift});
-
-  if (this.parent) {
-    output = output.blend({h: inputTint.h}, this.hueBlend)
-      .blend({s: inputTint.s}, this.satBlend);
-    output.setHSWL({
-      wl: this.parent.contrastColor(this.lumContrast).wl
-    });
+  if (this.hueShift !== 0) {
+    hue = output.setHSWL({h: hue}).shift({h: this.hueShift}).h;
   }
+  sat = Tint.adjustAttr(sat, this.satAdjust);
 
-  this.setHSWL(output.tiny.toHswl());
-  this.render();
-  // todo update dependents
+  this.setHSWL({h: hue, s: sat, wl: lum});
+  this._render();
+  this._updateDependents();
+};
+
+// safely delete this element and remove dependencies
+Palette.Tint.prototype.destroy = function() {
+  // remove this tint as a dependency from all children
+  this.setParent(null);
+  this.children.forEach(function(child) {
+    child.setParent(null);
+  });
+  this.$swatch.remove();
 };
 
 // update palette swatch markup
-Palette.Tint.prototype.render = function() {
+Palette.Tint.prototype._render = function() {
   this.$swatch
     .text(this.toStr())
     .css({
@@ -255,14 +594,11 @@ Palette.Tint.prototype.render = function() {
     });
 };
 
-// bake the altered color in permanantly
-// and clear all dependencies and transforms
-Palette.Tint.prototype.bake = function() {
-};
-
-// clear all of the dependencies and set the
-// color back to its initial state
-Palette.Tint.prototype.revert = function() {
+// update all dependent tints
+Palette.Tint.prototype._updateDependents = function() {
+  this.children.forEach(function(child) {
+    child.update();
+  });
 };
 
 module.exports = Palette;

@@ -11,4 +11,9 @@ Util.round = function(value, decimals) {
   return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
 };
 
+// use with Array.prototype.filter to remove duplicates from an array
+Util.uniq = function(value, index, self) { 
+    return self.indexOf(value) === index;
+};
+
 module.exports = Util;

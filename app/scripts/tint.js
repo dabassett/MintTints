@@ -30,6 +30,23 @@ Tint.prototype = {
     return new Tint(tc.getReadable(this.tiny, opts));
   },
 
+  // Returns an object with the luminance needed to achieve the desired
+  // contrast with lighter and darker colors, and the best of the two.
+  // Note that if the contrast is greater than this color's maxContrast then
+  // the resulting luminances (either 0 or 1) will only achieve the maxContrast
+  // value for this color.
+  calcLuminance: function (contrast) {
+    var out = {};
+    out.light = Tint.normalize01(contrast * (this.wl + 0.05) - 0.05);
+    out.dark = Tint.normalize01(((this.wl + 0.05) / contrast) - 0.05);
+    if (this.wl < 0.1791104) {
+      out.best = out.light;
+    } else {
+      out.best = out.dark;
+    }
+    return out;
+  },
+
   // return true when this color meets or exceeds
   // the specified contrast ratio, false otherwise
   hasContrast: function (otherTint, contrast) {
