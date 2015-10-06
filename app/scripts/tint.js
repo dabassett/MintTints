@@ -2,9 +2,18 @@
 
 var tc = require('tinycolor');
 
-// the primary color model
+// the primary color model. Accepts any valid Tinycolor inputs (string or obj
+// attributes), or tinycolor or tint objects.
 var Tint = function (color) {
-  this.tiny = tc(color);
+  // clone existing tints. the variable shuffling is to minimize object
+  // instantiation, and color drift that occurs when converting between formats
+  var colorObj = color;
+  if (color instanceof Tint) {
+    colorObj = color.tiny.getOriginalInput();
+  } else if (color instanceof tinycolor) {
+    colorObj = color.getOriginalInput();
+  }
+  this.tiny = tc(colorObj);
   var hswl = this.tiny.toHswl();
   this.h = hswl.h;
   this.s = hswl.s;

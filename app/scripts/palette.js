@@ -17,6 +17,31 @@ var Palette = function(opts) {
   if (this.tints.length === 0) {
     this.random();
   }
+
+  this.$swatches = $('<div>', {
+    'class': 'pa-swatches'
+  });
+  this.tints.forEach(function(tint) {
+    tint.$swatch.appendTo(_this.$swatches);
+  });
+
+  this.$addButton = $('<button>', {
+    'class': 'pa-add',
+    text: 'Add'
+  });
+
+  this.$removeButton = $('<button>', {
+    'class': 'pa-remove',
+    text: 'Delete'
+  });
+
+  this.$colorpicker = $('<input>', { 'class': 'pa-colorpicker' });
+  
+  this.$editor = $('<div>', {
+    'class': 'pa-editor'
+  });
+
+
   this._render();
   this.setCurrentTint(this.tints[0]);
 };
@@ -26,98 +51,56 @@ Palette.prototype = {
   _render: function() {
     var _this = this;
 
-    this.inputs = {
-      $name: $('<input>', {
-        type: 'text',
-        data: {
-          method: 'swatchName',
-          label: 'Name'
-        }
-      }),
-      $color: $('<input>', {
-        type: 'text',
-        data: {
-          method: 'rawColor',
-          label: 'Color'
-        }
-      }),
-      $parent: $('<select>', {
-        id: 'parent',
-        data: {
-          method: 'parent',
-          label: 'Inherit From'
-        }
-      }),
-      $hueShift: $('<input>', {
-        type: 'range',
-        max: 180,
-        min: -180,
-        data: {
-          method: 'hueShift',
-          label: 'Hue Adjust'
-        }
-      }),
-      $hueBlend: $('<input>', {
-        type: 'range',
-        data: {
-          method: 'hueBlend',
-          label: 'Hue Blend'
-        }
-      }),
-      $satAdjust: $('<input>', {
-        type: 'range',
-        min: -1,
-        max: 1,
-        step: 0.01,
-        data: {
-          method: 'satAdjust',
-          label: 'Sat Adjust'
-        }
-      }),
-      $satBlend: $('<input>', {
-        type: 'range',
-        data: {
-          method: 'satBlend',
-          label: 'Sat Blend'
-        }
-      }),
-      $lumAdjust: $('<input>', {
-        type: 'range',
-        min: -1,
-        max: 1,
-        step: 0.01,
-        data: {
-          method: 'lumAdjust',
-          label: 'Lum Adjust'
-        }
-      }),
-      $lumContrast: $('<input>', {
-        type: 'range',
-        min: 1,
-        max: 21,
-        step: 0.1,
-        data: {
-          method: 'lumContrast',
-          label: 'Contrast'
-        }
-      })
-    };
+    var inputContainers = {};
+    var transforms = {};
+    inputContainers.$buttons = $('<div>', {
+        'class': 'pa-buttons'
+    })
+      .append(this.$addButton)
+      .append(this.$removeButton);
+    inputContainers.$settings = $('<div>', {
+        'class': 'pa-settings'
+    })
+      .append(this.inputs.$name)
+      .append(this.inputs.$color)
+      .append(this.inputs.$parent);
+    transforms.$hue = $('<fieldset>', {
+        'class': 'pa-hue'
+    })
+      .append($('<legend>', { text: 'Hue' }))
+      .append(this.inputs.$hueShift)
+      .append(this.inputs.$hueBlend);
+    transforms.$saturation = $('<fieldset>', {
+        'class': 'pa-sat'
+    })
+      .append($('<legend>', { text: 'Saturation' }))
+      .append(this.inputs.$satAdjust)
+      .append(this.inputs.$satBlend);
+    transforms.$luminance = $('<fieldset>', {
+        'class': 'pa-lum'
+    })
+      .append($('<legend>', { text: 'Luminance' }))
+      .append(this.inputs.$lumAdjust)
+      .append(this.inputs.$lumContrast);
 
-    this.$swatches = $('<div></div>', {
-      'class': 'pa-swatches'
-    });
-    this.tints.forEach(function(tint) {
-      tint.$swatch.appendTo(_this.$swatches);
-    });
-
+    inputContainers.$transforms = $('<div>', {
+        'class': 'pa-transforms'
+    })
+      .append(transforms.$hue)
+      .append(transforms.$saturation)
+      .append(transforms.$luminance);
 
     // add labels to the inputs
-    var inputLabels = [];
-    $.each(this.inputs, function(index, $input) {
-      var $label = $('<label>', { text: $input.data('label') });
-      $label.append($input);
-      inputLabels.push($label);
+    $.each(this.inputs, function(idx, $input) {
+      $input.wrap($('<div>', { 'class': 'pa-input' }));
+      $input.before($('<label>', {
+        text: $input.data('label'),
+        'for': $input.attr('id')
+      }));
     });
+
+    // add colorpicker
+    this.inputs.$color.before(this.$colorpicker);
 
     // add options to the select box
     this.inputs.$parent.append($('<option>', {
@@ -128,27 +111,10 @@ Palette.prototype = {
       _this.inputs.$parent.append(_this._getParentOption(tint));
     });
 
-    this.$addButton = $('<button>', {
-      'class': 'pa-add',
-      text: 'Add'
-    });
-
-    this.$removeButton = $('<button>', {
-      'class': 'pa-remove',
-      text: 'Remove'
-    });
-
-    this.$colorpicker = $('<input>', { 'class': 'pa-colorpicker' });
-    
-    this.$editor = $('<div></div>', {
-      'class': 'pa-editor'
-    });
-
     this.$editor
-      .append(this.$addButton)
-      .append(this.$removeButton)
-      .append(inputLabels)
-      .append(this.$colorpicker);
+      .append(inputContainers.$buttons)
+      .append(inputContainers.$settings)
+      .append(inputContainers.$transforms);
 
     this.$container.append(this.$swatches, this.$editor);
 
@@ -441,6 +407,92 @@ Palette.prototype = {
     removePaletteTint: function (event) {
       this.removeTint(this.currentTint);
     }
+  },
+
+  // collection of jquery editor controls
+  inputs: {
+    $name: $('<input>', {
+      id: 'pa-name',
+      type: 'text',
+      data: {
+        method: 'swatchName',
+        label: 'Name'
+      }
+    }),
+    $color: $('<input>', {
+      id: 'pa-color',
+      type: 'text',
+      data: {
+        method: 'rawColor',
+        label: 'Base Color'
+      }
+    }),
+    $parent: $('<select>', {
+      id: 'pa-parent',
+      data: {
+        method: 'parent',
+        label: 'Inherit From'
+      }
+    }),
+    $hueShift: $('<input>', {
+      id: 'pa-hue-shift',
+      type: 'range',
+      max: 180,
+      min: -180,
+      data: {
+        method: 'hueShift',
+        label: 'Adjust'
+      }
+    }),
+    $hueBlend: $('<input>', {
+      id: 'pa-hue-blend',
+      type: 'range',
+      data: {
+        method: 'hueBlend',
+        label: 'Blend'
+      }
+    }),
+    $satAdjust: $('<input>', {
+      id: 'pa-sat-adjust',
+      type: 'range',
+      min: -1,
+      max: 1,
+      step: 0.01,
+      data: {
+        method: 'satAdjust',
+        label: 'Adjust'
+      }
+    }),
+    $satBlend: $('<input>', {
+      id: 'pa-sat-blend',
+      type: 'range',
+      data: {
+        method: 'satBlend',
+        label: 'Blend'
+      }
+    }),
+    $lumAdjust: $('<input>', {
+      id: 'pa-lum-adjust',
+      type: 'range',
+      min: -1,
+      max: 1,
+      step: 0.01,
+      data: {
+        method: 'lumAdjust',
+        label: 'Adjust'
+      }
+    }),
+    $lumContrast: $('<input>', {
+      id: 'pa-lum-contrast',
+      type: 'range',
+      min: 1,
+      max: 21,
+      step: 0.1,
+      data: {
+        method: 'lumContrast',
+        label: 'Contrast'
+      }
+    })
   }
 };
 
@@ -540,17 +592,16 @@ Palette.Tint.prototype.update = function() {
   var output, hue, sat, lum;
 
   if (this.parent) {
-    var inputHsl = tc(this.rawColor).toHsl();
-    output = this.parent.set();
+    output = new Tint(this.parent);
     hue = output.h;
     sat = output.s;
     lum = output.wl;
     // blend parent with base color
     if (this.hueBlend !== 0) {
-      hue = output.blend({h: inputHsl.h}, this.hueBlend).h;
+      hue = output.blend({h: this.h}, this.hueBlend).h;
     }
     if (this.satBlend !== 0) {
-      sat = output.blend({s: inputHsl.s}, this.satBlend).s;
+      sat = output.blend({s: this.s}, this.satBlend).s;
     }
     // contrast parent color
     if (this.lumContrast > 1) {
