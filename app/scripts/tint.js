@@ -13,11 +13,7 @@ var Tint = function (color) {
   } else if (color instanceof tinycolor) {
     colorObj = color.getOriginalInput();
   }
-  this.tiny = tc(colorObj);
-  var hswl = this.tiny.toHswl();
-  this.h = hswl.h;
-  this.s = hswl.s;
-  this.wl = hswl.wl;
+  this.setTinycolor(colorObj);
 };
 
 Tint.prototype = {
@@ -85,6 +81,17 @@ Tint.prototype = {
     else {
       return 'AAA Small';
     }
+  },
+
+  // a setter for the tinycolor base object
+  // note: this method does not force a colorspace conversion and
+  // will not cause colorspace drift with repeated calls (ie. it is idempotent)
+  setTinycolor: function (tiny) {
+    this.tiny = tc(tiny);
+    var hswl = this.tiny.toHswl();
+    this.h = hswl.h;
+    this.s = hswl.s;
+    this.wl = hswl.wl;
   },
 
   // a mutator for the hswl attributes

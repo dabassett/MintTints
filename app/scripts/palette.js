@@ -506,8 +506,8 @@ Palette.Tint = function(color, opts) {
     'class': 'pa-swatch'
   });
 
-  // note: references to other tints for color editing purposes
-  //       not related to the class's inheritance structure
+  // note: these are references to other tints for color editing purposes
+  //       and are not related to the class's inheritance structure
   if (opts.parent) {
     this.setParent(opts.parent);
   }
@@ -582,17 +582,19 @@ Palette.Tint.prototype._removeChild = function(child) {
 Palette.Tint.prototype.update = function() {
   var output, hue, sat, lum;
 
+  // the tint is inheriting color from a parent
   if (this.parent) {
+    var base = new Tint(this.rawColor);
     output = new Tint(this.parent);
     hue = output.h;
     sat = output.s;
     lum = output.wl;
     // blend parent with base color
     if (this.hueBlend !== 0) {
-      hue = output.blend({h: this.h}, this.hueBlend).h;
+      hue = output.blend({h: base.h}, this.hueBlend).h;
     }
     if (this.satBlend !== 0) {
-      sat = output.blend({s: this.s}, this.satBlend).s;
+      sat = output.blend({s: base.s}, this.satBlend).s;
     }
     // contrast parent color
     if (this.lumContrast > 1) {
@@ -611,7 +613,13 @@ Palette.Tint.prototype.update = function() {
   }
   sat = Tint.adjustAttr(sat, this.satAdjust);
 
-  this.setHSWL({h: hue, s: sat, wl: lum});
+  // only use a color space conversion if an HSWL transform occured
+  if (hue !== output.h || sat !== output.s || lum !== output.wl) {
+    this.setHSWL({h: hue, s: sat, wl: lum});
+  } else {
+    this.setTinycolor(output.tiny);
+  }
+
   this._render();
   this._updateDependents();
 };
