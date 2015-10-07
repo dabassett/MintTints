@@ -34,8 +34,6 @@ var Palette = function(opts) {
     'class': 'pa-remove',
     text: 'Delete'
   });
-
-  this.$colorpicker = $('<input>', { 'class': 'pa-colorpicker' });
   
   this.$editor = $('<div>', {
     'class': 'pa-editor'
@@ -99,9 +97,6 @@ Palette.prototype = {
       }));
     });
 
-    // add colorpicker
-    this.inputs.$color.before(this.$colorpicker);
-
     // add options to the select box
     this.inputs.$parent.append($('<option>', {
       text: 'None',
@@ -117,18 +112,6 @@ Palette.prototype = {
       .append(inputContainers.$transforms);
 
     this.$container.append(this.$swatches, this.$editor);
-
-    // init the colorpicker
-    this.$colorpicker.spectrum({ 
-      theme: 'sp-mint',
-      showInput: false,
-      showButtons: false,
-      showInitial: true,
-      move: function (color) {
-        _this.currentTint.setAttr('rawColor', color.toRgb());
-        _this.inputs.$color.val(color.toHexString());
-      }
-    });
   },
 
   // generate a simple analogous palette for init
@@ -174,7 +157,7 @@ Palette.prototype = {
     Palette.swatchesCreated++;
   },
 
-  // remove a palette color
+  // remove the specified tint from the palette
   removeTint: function (tint) {
     var index = this.tints.indexOf(tint);
     if (index > -1) {
@@ -182,7 +165,7 @@ Palette.prototype = {
     }
     this._updateParentOptions(tint.swatchName, null)
     tint.destroy();
-    this.setCurrentTint();
+    this.setCurrentTint(this.tints[this.tints.length - 1]);
   },
 
   // set the current tint attribute to the user's selection and
@@ -215,8 +198,91 @@ Palette.prototype = {
       this.inputs.$parent.val(this.currentTint.parent.getName());
     }
 
-    this._updateColorpicker(this.currentTint.rawColor);
     this._toggleInputs();
+  },
+
+  // set a Palette.Tint attribute on the current swatch
+  setSwatchAttr: function(attr, val) {
+    if (attr === 'swatchName') {
+      this.setSwatchName(val);
+    } else if (attr === 'rawColor') {
+      this.setSwatchBaseColor(val);
+    } else { // input was from a range (slider)
+      this.currentTint.setAttr(attr, parseFloat(val));
+    }
+  },
+
+  // set the name for the current swatch if the new name passes validations
+  // sets the 'invalid' class for the input if the new name fails validations
+  setSwatchName: function(newName) {
+    // todo - display the error messages too
+    var validation = this._validName(newName);
+    if (validation.valid) {
+      this.inputs.$name.removeClass('invalid');
+      var oldName = this.currentTint.swatchName;
+      this.currentTint.setAttr('swatchName', newName);
+      this._updateParentOptions(oldName, newName);
+    } else {
+      this.inputs.$name.addClass('invalid');
+    }
+  },
+
+  // set the base color for the current swatch
+  setSwatchBaseColor: function(color) {
+    this.currentTint.setAttr('rawColor', color);
+  },
+
+  // set the parent Swatch for the current swatch
+  setSwatchParent: function(tint) {
+    this.currentTint.setParent(tint);
+    this.currentTint.update();
+    this._toggleInputs();
+  },
+
+  // event handlers
+  // --------------
+  handlers: {
+    editorInput: function (event) {
+      var $elem = $(event.target);
+      var attribute = $elem.data('method');
+      // todo - sanitize inputs for good measure
+      var value = $elem.val();
+      console.log('editorInput on:', attribute, 'Value:', value);
+      this.setSwatchAttr(attribute, value);
+    },
+
+    clickSwatch: function (event) {
+      var $clickedSwatch = $(event.target);
+      if (!$clickedSwatch.hasClass('active')) {
+        var result = $.grep(this.tints, function(tint) {
+          return $clickedSwatch.is(tint.$swatch);
+        });
+        if (result.length === 0) {
+          throw new Error('Could not find the clicked swatch');
+        } else {
+          this.setCurrentTint(result[0]);
+        }
+      }
+    },
+
+    parentInput: function (event) {
+      var parentName = this.inputs.$parent.val();
+      var selectedTint;
+      this.tints.forEach(function(tint) {
+        if (tint.getName() === parentName) {
+          selectedTint = tint;
+        }
+      });
+      this.setSwatchParent(selectedTint)
+    },
+
+    addButton: function (event) {
+      this.addTint();
+    },
+
+    removeButton: function (event) {
+      this.removeTint(this.currentTint);
+    }
   },
 
   _getParentOption: function (paletteTint) {
@@ -281,10 +347,6 @@ Palette.prototype = {
     return dependents;
   },
 
-  _updateColorpicker: function (newColor) {
-    this.$colorpicker.spectrum('set', newColor);
-  },
-
   // returns a validation object members 'valid' being true or false and
   // any error messages in the 'errors' array
   _validName: function (name) {
@@ -309,7 +371,6 @@ Palette.prototype = {
       $.each(this.inputs, function(key, $input) {
         $input.prop('disabled', false);
       });
-      this.$colorpicker.spectrum('enable');
       this.active = true;
     }
   },
@@ -319,94 +380,25 @@ Palette.prototype = {
     $.each(this.inputs, function(key, $input) {
       $input.prop('disabled', true);
     });
-    this.$colorpicker.spectrum('disable');
     this.active = false;
   },
 
   _bindHandlers: function () {
     // palette swatch selection
-    this.$swatches.off();
-    this.$swatches.on('click', '.pa-swatch', $.proxy(this.events.selectSwatch, this));
+    this.$swatches.off().on('click', '.pa-swatch', $.proxy(this.handlers.clickSwatch, this));
 
     // editor controls
-    this.$editor.on('change input', 'input[type=range]', $.proxy(this.events.updateSwatch, this));
-    this.$editor.on('change', 'input[type=text]', $.proxy(this.events.updateSwatch, this));
-    this.inputs.$parent.on('change', $.proxy(this.events.changeSwatchParent, this));
-    this.$removeButton.on('click', $.proxy(this.events.removePaletteTint, this));
-    this.$addButton.off();
-    this.$addButton.on('click', $.proxy(this.events.addPaletteTint, this));
+    this.$editor.on('change input', 'input[type=range]', $.proxy(this.handlers.editorInput, this));
+    this.$editor.on('change', 'input[type=text]', $.proxy(this.handlers.editorInput, this));
+    this.inputs.$parent.on('change', $.proxy(this.handlers.parentInput, this));
+    this.$removeButton.on('click', $.proxy(this.handlers.removeButton, this));
+    this.$addButton.off().on('click', $.proxy(this.handlers.addButton, this));
   },
 
   _unbindHandlers: function () {
     this.$editor.off();
     this.inputs.$parent.off();
     this.$removeButton.off();
-  },
-
-  // event handlers
-  // --------------
-  events: {
-    updateSwatch: function (event) {
-      var $elem = $(event.target);
-      var method = $elem.data('method');
-      // todo - sanitize inputs for good measure
-      var value = $elem.val();
-      console.log('updateSwatch on:', method, 'Value:', value);
-
-      if (method === 'swatchName') {
-        var validation = this._validName(value);
-        if (validation.valid) {
-          this.inputs.$name.removeClass('invalid');
-          var oldName = this.currentTint.swatchName;
-          this.currentTint.swatchName = value;
-          this._updateParentOptions(oldName, value);
-        } else {
-          this.inputs.$name.addClass('invalid');
-        }
-      } else if (method === 'rawColor') {
-        this.currentTint.setAttr(method, value);
-        this._updateColorpicker(value);
-      // input was from a range (slider)
-      } else {
-        this.currentTint.setAttr(method, parseFloat(value));
-      }
-    },
-
-    selectSwatch: function (event) {
-      var $clickedSwatch = $(event.target);
-      if (!$clickedSwatch.hasClass('active')) {
-        var result = $.grep(this.tints, function(tint) {
-          return $clickedSwatch.is(tint.$swatch);
-        });
-        if (result.length === 0) {
-          // todo throw an error
-          console.log('Element Not Found')
-        } else {
-          this.setCurrentTint(result[0]);
-        }
-      }
-    },
-
-    changeSwatchParent: function (event) {
-      var parentName = this.inputs.$parent.val();
-      var selectedTint;
-      this.tints.forEach(function(tint) {
-        if (tint.getName() === parentName) {
-          selectedTint = tint;
-        }
-      });
-      this.currentTint.setParent(selectedTint);
-      this.currentTint.update();
-      this._toggleInputs();
-    },
-
-    addPaletteTint: function (event) {
-      this.addTint();
-    },
-
-    removePaletteTint: function (event) {
-      this.removeTint(this.currentTint);
-    }
   },
 
   // collection of jquery editor controls
@@ -510,9 +502,9 @@ Palette.Tint = function(color, opts) {
   // color prior to any processing
   this.rawColor = tc(color).toHexString();
   this.swatchName = opts.swatchName || '';
-  this.$swatch = $('<div></div>', {
+  this.$swatch = $('<div>', {
     'class': 'pa-swatch'
-  }).append('<p>' + this.swatchName + '</p>');
+  });
 
   // note: references to other tints for color editing purposes
   //       not related to the class's inheritance structure
@@ -566,7 +558,6 @@ Palette.Tint.prototype.setRawColor = function(newColor) {
 };
 
 Palette.Tint.prototype.getName = function() {
-  // todo - enforce a unique non-null name instead
   if (this.swatchName) {
     return this.swatchName;
   } else {

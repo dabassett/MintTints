@@ -6,9 +6,10 @@ var tc = require('tinycolor');
 require('bootstrap-sass');
 var Tint = require('./tint.js');
 var Modal = require('./modal.js');
-var TintEditor = require('./editor.js');
-var Palette = require('./palette.js');
-global.Palette = Palette;
+var Editor = require('./editor.js');
+var TintEditor = require('./tintEditor.js');
+var PaletteDecorator = require('./paletteDecorator.js');
+global.Tint = Tint;
 require('spectrum')($);
 
 // jQuery plugins
@@ -46,14 +47,14 @@ $.fn.colorslice = function(tint, hueShift) {
 
 $(function() {
   // initialize the tint editor
-  var editor = new TintEditor({
+  var editor = new Editor({
     container: '.editor',
     colorpicker: '#colorpicker'
   });
   var colorInfo = new Modal('#color-info');
 
   // initialize the palette builder
-  var palette = new Palette({
+  var palette = new PaletteDecorator({
     container: '.palette'
   });
 

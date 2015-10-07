@@ -1,18 +1,124 @@
 .palette {
+  .pa-swatches {
+    @include make-row();
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 20px;
 
-  .pa-swatch {
-    min-width: 100px;
-    min-height: 100px;
+    .pa-swatch {
+      display: inline-block;
+      height: 4em;
+      font-size: 20px;
+      line-height: 20px;
+      margin: 0;
+      padding: 5px;
+      overflow: hidden;
 
-    font-size: 20px;
-    margin: 0;
-    padding: 5px;
-    line-height: 20px;
+      &:hover {
+        cursor: pointer;
+        border-bottom: 5px dotted;
+      }
+
+      &.active {
+        border-bottom: 5px solid;
+      }
+    }
   }
 
   .pa-editor {
-    input:disabled{
+    @extend .form-horizontal;
+
+    label {
+      text-align: right;
+      padding-right: 5%;
+    }
+
+    input:disabled {
       opacity: 0.5;
     }
+
+    .pa-buttons {
+      text-align: center;
+      .pa-add, .pa-remove {
+        @extend .btn;
+        @extend .btn-lg;
+        font-size: 22px;
+      }
+      .pa-add {
+        @extend .btn-primary;
+        margin: 20px;
+        width: 33%;
+        min-width: 160px;
+
+        .glyphicon {
+          margin-right: 10px;
+        }
+      }
+      .pa-remove {
+        @extend .btn-danger;
+        margin: 0 10px;
+      }
+    }
+
+    .pa-settings {
+      @include make-sm-column(6);
+      @include make-md-column(4);
+      @include make-md-column-offset(2);
+
+      .pa-input {
+        margin-left: 0;
+        margin-right: 0;
+        label {
+          @extend .control-label;
+          @extend .h4;
+        }
+        input, select {
+          @extend .form-control;
+        }
+      }
+
+      .pa-color-field {
+        min-width: 75px;
+      }
+    }
+
+    .pa-transforms {
+      @include make-sm-column(6);
+      @include make-md-column(4);
+      .pa-hue, .pa-sat, .pa-lum {
+        margin-bottom: 10px;
+        legend {
+          margin-bottom: 10px;
+        }
+      }
+      .pa-input {
+        margin-bottom: 5px;
+
+        label {
+          @include make-xs-column(4);
+        }
+        input {
+          @include make-xs-column(7);
+          padding: 0;
+        }
+      }
+    }
+  }
+}
+
+// responsive palette swatches
+@media screen and (max-width: $screen-sm-min) {
+  .pa-swatch {
+    width: 50%;
+  }
+}
+@media screen and (min-width: $screen-sm-min) {
+  .pa-swatch {
+    width: 33%;
+  }
+}
+@media screen and (min-width: $screen-md-min) {
+  .pa-swatch {
+    width: 20%;
   }
 }
