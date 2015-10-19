@@ -33,7 +33,7 @@
   }
 
   .pa-editor {
-    @extend .form-horizontal;
+    //@extend .form-horizontal;
 
     label {
       text-align: right;
@@ -68,9 +68,11 @@
     }
 
     .pa-settings {
-      @include make-sm-column(6);
-      @include make-md-column(4);
-      @include make-md-column-offset(2);
+      @include make-row;
+
+      .form-group {
+        @include make-sm-column(4);
+      }
 
       .pa-input {
         margin-left: 0;
@@ -90,22 +92,29 @@
     }
 
     .pa-transforms {
-      @include make-sm-column(6);
-      @include make-md-column(4);
+      @include make-row;
       .pa-hue, .pa-sat, .pa-lum {
+        @include make-sm-column(4);
         margin-bottom: 10px;
         legend {
           margin-bottom: 10px;
         }
       }
       .pa-input {
-        margin-bottom: 5px;
+        @include make-row;
+        margin: 0 0 5px 0;
 
         label {
           @include make-xs-column(4);
+          @include make-sm-column(5);
+          @include make-md-column(4);
+          @include make-lg-column(3);
         }
         input {
-          @include make-xs-column(7);
+          @include make-xs-column(8);
+          @include make-sm-column(7);
+          @include make-md-column(8);
+          @include make-lg-column(9);
           padding: 0;
         }
       }
