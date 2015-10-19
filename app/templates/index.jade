@@ -12,7 +12,7 @@ block content
           p.te-sm-text
             | MintTints can take any color and generate analogous colors that satisfy 
             a(href="http://www.w3.org/TR/UNDERSTANDING-WCAG20/visual-audio-contrast-contrast.html") WCAG 2.0
-            |  contrast ratio requirements. This means that you no longer need to fiddle with finicky formulae to create perfect color palletes.
+            |  contrast ratio requirements. This means that you no longer need to fiddle with finicky formulae to create perfect color palettes.
         .col-md-4
           h2.te-lg-text
             | Powered by HSWL
@@ -22,35 +22,11 @@ block content
             | HSWL is a hybrid color space that combines the hue and saturation attributes from HSL and replaces lightness with 
             a(href="http://www.w3.org/WAI/GL/wiki/Relative_luminance") WCAG's luminance formula
             | . This connection allows you to specify colors by a desired contrast directly, without any of the "guess and check" methods that would otherwise be required.
-      .row
-        .col-lg-3.col-md-5.col-sm-6
-          input#colorpicker
-        .col-lg-3.col-md-4.col-sm-6
-          h4 Background Color
-          div
-            label Max Contrast
-            p.te-contrast
-          p.te-hex
-          p.te-rgb
-          p.te-hsl
-          p.te-hsv
-          p.te-hswl
-          input.te-input
-        .col-lg-3.col-md-4.col-sm-6
-          h4 Contrast Colors
-          div
-            label Large
-            input.te-large(value="3")
-          div
-            label Medium
-            input.te-medium(value="4.5")
-          div
-            label Small
-            input.te-small(value="7")
 
   .palette
   .row.colors
   .row
-    button#more-colors.btn.btn-primary.btn-lg.btn-block(type='button') More Colors!
+    .col-sm-12
+      button#more-colors.btn.btn-primary.btn-lg.btn-block(type='button') More Colors!
 
   include ./partials/_modal.jade

@@ -3,8 +3,9 @@
   "private": true,
   "dependencies": {
     "bootstrap-sass": "~3.3.5",
-    "tinycolor": "git://github.com/dabassett/TinyColor#hswl",
-    "spectrum": "~1.7.1"
+    "jquery-textfill": "~0.6.0",
+    "spectrum": "~1.7.1",
+    "tinycolor": "git://github.com/dabassett/TinyColor#hswl"
   },
   "overrides": {
     "bootstrap-sass": {

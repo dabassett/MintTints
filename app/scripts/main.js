@@ -6,8 +6,6 @@ var tc = require('tinycolor');
 require('bootstrap-sass');
 var Tint = require('./tint.js');
 var Modal = require('./modal.js');
-var Editor = require('./editor.js');
-var TintEditor = require('./tintEditor.js');
 var PaletteDecorator = require('./paletteDecorator.js');
 global.Tint = Tint;
 require('spectrum')($);
@@ -46,11 +44,6 @@ $.fn.colorslice = function(tint, hueShift) {
 };
 
 $(function() {
-  // initialize the tint editor
-  var editor = new Editor({
-    container: '.editor',
-    colorpicker: '#colorpicker'
-  });
   var colorInfo = new Modal('#color-info');
 
   // initialize the palette builder
@@ -88,17 +81,6 @@ $(function() {
       });
   }
 
-  function updateJumbo() {
-    // selects a random hue only to keep the jumbotron colors consistent
-    var randomColor = tc({h: Math.floor(Math.random() * 360), s: 0.6, wl: 0.4});
-    var contrastColor = tc.getReadable(randomColor, {contrastRatio: 3.5});
-    $('.jumbotron').css({
-      'background-color': randomColor.toHexString(),
-      'border-color': contrastColor.toHexString(),
-      'color': contrastColor.toHexString()
-    });
-  }
-
   function addColors() {
     // populate the random colors list
     for(var i = 0; i < 48; i++) {
@@ -111,13 +93,5 @@ $(function() {
     addColors();
   });
 
-  // disable jumbotron transition and set an initial color
-  var savedTransition = $('.jumbotron').css('transition');
-  $('.jumbotron').css('transition', 'none');
-  updateJumbo();
-  // reset the transition
-  setInterval(function() { $('.jumbotron').css('transition', savedTransition); }, 10);
-
-  setInterval(function() { updateJumbo(); }, 120000);
   addColors();
 });

@@ -49,6 +49,7 @@ Palette.prototype = {
   _render: function() {
     var _this = this;
 
+    // todo -  this is pretty awful
     var inputContainers = {};
     var transforms = {};
     inputContainers.$buttons = $('<div>', {
@@ -243,7 +244,7 @@ Palette.prototype = {
   // --------------
   handlers: {
     editorInput: function (event) {
-      var $elem = $(event.target);
+      var $elem = $(event.currentTarget);
       var attribute = $elem.data('method');
       // todo - sanitize inputs for good measure
       var value = $elem.val();
@@ -252,7 +253,7 @@ Palette.prototype = {
     },
 
     clickSwatch: function (event) {
-      var $clickedSwatch = $(event.target);
+      var $clickedSwatch = $(event.currentTarget);
       if (!$clickedSwatch.hasClass('active')) {
         var result = $.grep(this.tints, function(tint) {
           return $clickedSwatch.is(tint.$swatch);
@@ -499,19 +500,21 @@ Palette.Tint = function(color, opts) {
   // call parent constructor
   Tint.call(this, color);
 
-  // color prior to any processing
-  this.rawColor = tc(color).toHexString();
-  this.swatchName = opts.swatchName || '';
-  this.$swatch = $('<div>', {
-    'class': 'pa-swatch'
-  });
+  // dom
+  this.$swatch = $('<div>', { 'class': 'pa-swatch' });
+  this.$colorLabel = $('<h3>', { 'class': 'pa-swatch-color' });
+  this.$nameLabel = $('<span>', { 'class': 'pa-swatch-name' });
+  this.$swatch.append(this.$colorLabel, this.$nameLabel, this.$parentLabel);
 
   // note: these are references to other tints for color editing purposes
   //       and are not related to the class's inheritance structure
+  this.children = [];
   if (opts.parent) {
     this.setParent(opts.parent);
   }
-  this.children = [];
+
+  this.rawColor = tc(color).toHexString();
+  this.setName(opts.swatchName || '');
 
   // attribute transformations
   this.hueShift = opts.hueShift || 0;
@@ -537,10 +540,13 @@ Palette.Tint.prototype.setAttr = function(attr, value) {
     this.setParent(value);
   } else if (attr === 'rawColor') {
     this.setRawColor(value);
+  } else if (attr === 'swatchName') {
+    this.setName(value);
   } else {
     this[attr] = value;
   }
   this.update();
+  return this;
 };
 
 Palette.Tint.prototype.setParent = function(newParent) {
@@ -551,6 +557,8 @@ Palette.Tint.prototype.setParent = function(newParent) {
     newParent._addChild(this);
   }
   this.parent = newParent;
+  this.setNameLabel();
+  return this;
 };
 
 Palette.Tint.prototype.setRawColor = function(newColor) {
@@ -564,6 +572,21 @@ Palette.Tint.prototype.getName = function() {
     return this.toStr();
   }
 };
+
+Palette.Tint.prototype.setName = function(name) {
+  this.swatchName = name;
+  this.setNameLabel();
+  return this;
+}
+
+Palette.Tint.prototype.setNameLabel = function() {
+  var label = this.getName();
+  if (this.parent) {
+    label += ' < ' + this.parent.getName();
+  }
+  this.children.forEach(function(child) { child.setNameLabel(); });
+  this.$nameLabel.text(label);
+}
 
 Palette.Tint.prototype._addChild = function(child) {
   if (this.children.indexOf(child) === -1) {
@@ -620,7 +643,7 @@ Palette.Tint.prototype.update = function() {
     this.setTinycolor(output.tiny);
   }
 
-  this._render();
+  this._updateColor();
   this._updateDependents();
 };
 
@@ -634,10 +657,9 @@ Palette.Tint.prototype.destroy = function() {
   this.$swatch.remove();
 };
 
-// update palette swatch markup
-Palette.Tint.prototype._render = function() {
+Palette.Tint.prototype._updateColor = function() {
+  this.$colorLabel.text(this.toStr());
   this.$swatch
-    .text(this.toStr())
     .css({
       backgroundColor: this.toStr(),
       color: this.contrastColor().toStr()

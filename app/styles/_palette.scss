@@ -3,15 +3,12 @@
     @include make-row();
     margin-left: auto;
     margin-right: auto;
-    padding: 0 20px;
 
     .pa-swatch {
       display: inline-block;
-      height: 4em;
-      font-size: 20px;
-      line-height: 20px;
+      height: 73px;
       margin: 0;
-      padding: 5px;
+      padding: 7px;
       overflow: hidden;
 
       &:hover {
@@ -21,6 +18,16 @@
 
       &.active {
         border-bottom: 5px solid;
+      }
+
+      .pa-swatch-color {
+        margin: 0;
+      }
+
+      .pa-swatch-name {
+        font-size: 18px;
+        line-height: 44px;
+        white-space: nowrap;
       }
     }
   }
