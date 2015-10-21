@@ -35,7 +35,7 @@ Tint.prototype = {
     return new Tint(tc.getReadable(this.tiny, opts));
   },
 
-  // Returns an object with the luminance needed to achieve the desired
+  // returns an object with the luminance needed to achieve the desired
   // contrast with lighter and darker colors, and the best of the two.
   // Note that if the contrast is greater than this color's maxContrast then
   // the resulting luminances (either 0 or 1) will only achieve the maxContrast
