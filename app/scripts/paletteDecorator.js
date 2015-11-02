@@ -26,7 +26,7 @@ var PaletteDecorator = function(opts) {
 // refer the prototype back to the parent
 PaletteDecorator.prototype = Object.create(Palette.prototype);
 
-// Set the "constructor" property
+// set the "constructor" property
 PaletteDecorator.prototype.constructor = PaletteDecorator;
 
 // add some bootstrap flair
@@ -63,6 +63,52 @@ PaletteDecorator.prototype.decorate = function() {
 
   // resize labels to fit swatches on screen resize
   $(window).on('resize', $.proxy(this._resizeSwatchLabel, this));
+
+  // range slider tooltips
+  $('input[type=range]').tooltip({
+    trigger: 'manual',
+    animation: false
+  });
+  this.$editor
+    .on('mouseover.pd change.pd input.pd', 'input[type=range]', $.proxy(this.handlers.showTooltip, this))
+    .on('mouseleave.pd', 'input[type=range]', this.handlers.hideTooltip);
+};
+
+// set the range control tooltip to track the marker on screen
+PaletteDecorator.prototype.handlers.showTooltip = function (event) {
+  var $el = $(event.currentTarget);
+
+  if (!$el.prop('disabled')) {
+    // update the tooltip text with the slider's current value
+    $el
+      .attr('data-original-title', this.prettyRangeValue($el))
+      .tooltip('show');
+
+    // position the tooltip over the slider marker
+    var $tooltip = $el.next('.tooltip');
+    var point = ($el.val() - $el.attr('min')) / ($el.attr('max') - $el.attr('min'));
+    var offset = $el.position().left - ($tooltip.width() / 2) - (5 * ((point * 2) - 1));
+    var position = (point * $el.width()) + offset;
+
+    $tooltip.css({ left: position });
+  }
+};
+
+PaletteDecorator.prototype.handlers.hideTooltip = function (event) {
+  $(event.currentTarget).tooltip('hide');
+};
+
+PaletteDecorator.prototype.prettyRangeValue = function (element) {
+  var method = element.data('method');
+  var val = element.val();
+  if (method === 'hueShift') {
+    val = val + '\u00B0'; // add degree symbol
+  } else if (method === 'satAdjust' || method === 'lumAdjust') {
+    val = Math.round(val * 100) + '%';
+  } else if (method === 'hueBlend' || method === 'satBlend') {
+    val = val + '%';
+  }
+  return val;
 };
 
 // parent function overrides

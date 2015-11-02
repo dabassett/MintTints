@@ -248,7 +248,6 @@ Palette.prototype = {
       var attribute = $elem.data('method');
       // todo - sanitize inputs for good measure
       var value = $elem.val();
-      console.log('editorInput on:', attribute, 'Value:', value);
       this.setSwatchAttr(attribute, value);
     },
 
@@ -386,20 +385,20 @@ Palette.prototype = {
 
   _bindHandlers: function () {
     // palette swatch selection
-    this.$swatches.off().on('click', '.pa-swatch', $.proxy(this.handlers.clickSwatch, this));
+    this.$swatches.off('click.pa').on('click.pa', '.pa-swatch', $.proxy(this.handlers.clickSwatch, this));
 
     // editor controls
-    this.$editor.on('change input', 'input[type=range]', $.proxy(this.handlers.editorInput, this));
-    this.$editor.on('change', 'input[type=text]', $.proxy(this.handlers.editorInput, this));
-    this.inputs.$parent.on('change', $.proxy(this.handlers.parentInput, this));
-    this.$removeButton.on('click', $.proxy(this.handlers.removeButton, this));
-    this.$addButton.off().on('click', $.proxy(this.handlers.addButton, this));
+    this.$editor.on('change.pa input.pa', 'input[type=range]', $.proxy(this.handlers.editorInput, this));
+    this.$editor.on('change.pa', 'input[type=text]', $.proxy(this.handlers.editorInput, this));
+    this.inputs.$parent.on('change.pa', $.proxy(this.handlers.parentInput, this));
+    this.$removeButton.on('click.pa', $.proxy(this.handlers.removeButton, this));
+    this.$addButton.off('click.pa').on('click.pa', $.proxy(this.handlers.addButton, this));
   },
 
   _unbindHandlers: function () {
-    this.$editor.off();
-    this.inputs.$parent.off();
-    this.$removeButton.off();
+    this.$editor.off('change.pa input.pa');
+    this.inputs.$parent.off('change.pa');
+    this.$removeButton.off('click.pa');
   },
 
   // collection of jquery editor controls
@@ -430,8 +429,8 @@ Palette.prototype = {
     $hueShift: $('<input>', {
       id: 'pa-hue-shift',
       type: 'range',
-      max: 180,
       min: -180,
+      max: 180,
       data: {
         method: 'hueShift',
         label: 'Adjust'
@@ -440,6 +439,8 @@ Palette.prototype = {
     $hueBlend: $('<input>', {
       id: 'pa-hue-blend',
       type: 'range',
+      min: 0,
+      max: 100,
       data: {
         method: 'hueBlend',
         label: 'Blend'
@@ -459,6 +460,8 @@ Palette.prototype = {
     $satBlend: $('<input>', {
       id: 'pa-sat-blend',
       type: 'range',
+      min: 0,
+      max: 100,
       data: {
         method: 'satBlend',
         label: 'Blend'

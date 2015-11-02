@@ -178,7 +178,8 @@ gulp.task('views', () => {
     .pipe(reload({stream: true}));
 }); 
 
-gulp.task('build', ['lint', 'html', 'images', 'fonts', 'extras'], () => {
+// todo - add linting back
+gulp.task('build', ['html', 'images', 'fonts', 'extras'], () => {
   return gulp.src('dist/**/*').pipe($.size({title: 'build', gzip: true}));
 });
 
