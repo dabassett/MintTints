@@ -87,10 +87,12 @@ PaletteDecorator.prototype.handlers.showTooltip = function (event) {
     // position the tooltip over the slider marker
     var $tooltip = $el.next('.tooltip');
     var point = ($el.val() - $el.attr('min')) / ($el.attr('max') - $el.attr('min'));
-    var offset = $el.position().left - ($tooltip.width() / 2) - (5 * ((point * 2) - 1));
+    var offset = $el.position().left - ($tooltip.width() / 2) - (6 * ((point * 2) - 1));
     var position = (point * $el.width()) + offset;
 
-    $tooltip.css({ left: position });
+    $tooltip.css({
+      left: position
+    });
   }
 };
 

@@ -1,5 +1,8 @@
 $icon-font-path: '../fonts/';
 
+$control-color: #F44336;
+$brand-danger: $control-color;
+
 // bower:scss
 @import "bower_components/bootstrap-sass/assets/stylesheets/_bootstrap";
 @import "bower_components/spectrum/spectrum";
@@ -10,4 +13,5 @@ $icon-font-path: '../fonts/';
 @import "spectrum_theme";
 @import "tint";
 @import "modal";
+@import "range";
 @import "palette";
